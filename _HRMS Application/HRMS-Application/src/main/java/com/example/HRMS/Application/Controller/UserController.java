@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.*;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/Employee")
 public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -201,7 +202,6 @@ public class UserController {
         response.put("name", fullName.trim());
         response.put("email", loggedInUser.getEmail());
         response.put("token", token);
-
         return ResponseEntity.ok(response);
     }
 
