@@ -48,8 +48,32 @@ public class EmployeeServiceImpl implements EmployeeService {
         existing.setExitDate(employee.getExitDate());
         existing.setStatus(employee.getStatus());
 
+        // Update profile picture
+        existing.setProfilePicture(employee.getProfilePicture());
+
         return employeeRepository.save(existing);
     }
+
+
+//    @Override
+//    public Employee updateEmployee(Long id, Employee employee) {
+//        Employee existing = employeeRepository.findById(id)
+//                .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with id: " + id));
+//        logger.info("Updating employee ID: {}", id);
+//
+//        existing.setFirstName(employee.getFirstName());
+//        existing.setLastName(employee.getLastName());
+//        existing.setEmail(employee.getEmail());
+//        existing.setPhone(employee.getPhone());
+//        existing.setDepartment(employee.getDepartment());
+//        existing.setJobTitle(employee.getJobTitle());
+//        existing.setRole(employee.getRole());
+//        existing.setJoiningDate(employee.getJoiningDate());
+//        existing.setExitDate(employee.getExitDate());
+//        existing.setStatus(employee.getStatus());
+//
+//        return employeeRepository.save(existing);
+//    }
 
     @Override
     public void deleteEmployee(Long id) {

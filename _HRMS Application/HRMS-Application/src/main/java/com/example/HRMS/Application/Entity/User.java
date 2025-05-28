@@ -33,5 +33,9 @@ public class User {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
+    @Lob
+    private byte[] profilePicture;
+
+
 }
 
