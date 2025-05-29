@@ -32,4 +32,8 @@ public class Employee {
     private LocalDate exitDate;
 
     private String status; // Active, On Notice, Resigned
+
+    @Lob
+    private byte[] profilePicture;
+
 }

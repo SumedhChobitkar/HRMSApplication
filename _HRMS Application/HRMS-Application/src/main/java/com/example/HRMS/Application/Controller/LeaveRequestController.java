@@ -17,7 +17,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*")
+
+@CrossOrigin("*")
 @RequestMapping("/api/leaves")
 public class LeaveRequestController {
 

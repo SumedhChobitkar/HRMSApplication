@@ -33,6 +33,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
+                .cors(cors ->{})
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
@@ -50,6 +51,11 @@ public class SecurityConfig {
                         .requestMatchers("/Employee/hr/**").hasRole("HR")
                         .requestMatchers("/Employee/seniorhr/**").hasRole("SENIOR_HR")
                         .requestMatchers("/api/employees/**").hasAnyRole("HR", "SENIOR_HR", "MANAGER")
+                        //Payroll
+                        .requestMatchers("/api/salary/**").hasAnyRole("HR", "SENIOR_HR", "MANAGER")
+                        .requestMatchers("/api/salary/history/**", "/api/salary/slip/**").hasAnyRole("USER", "HR", "SENIOR_HR")
+
+
                         .anyRequest().authenticated()
                 );
 
