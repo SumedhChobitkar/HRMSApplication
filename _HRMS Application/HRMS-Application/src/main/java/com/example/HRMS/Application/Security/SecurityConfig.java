@@ -40,6 +40,9 @@ public class SecurityConfig {
                                 "/Employee/register",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
+                                "/api/leaves/**",
+                                "/api/attendance/**",
+                                "/api/reviews/**",
                                 "/swagger-ui.html"
                         ).permitAll()
                         .requestMatchers("/Employee/user/**").hasRole("USER")
