@@ -57,11 +57,8 @@ public class SalaryController {
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR')")
-    public ResponseEntity<String> delete(@PathVariable Long id,
-                                         @RequestParam String role) {
-        if (!role.equalsIgnoreCase("HR") && !role.equalsIgnoreCase("SENIOR_HR")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
-        }
+    public ResponseEntity<String> delete(@PathVariable Long id
+                                        ) {
         salaryRecordService.deleteById(id);
         return ResponseEntity.ok("Record deleted successfully");
     }
