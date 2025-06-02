@@ -43,6 +43,8 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/api/leaves/**",
                                 "/api/attendance/**",
+                                "/api/salary/id/{id}",
+                                "/api/salary/month/{month}",
                                 "/api/reviews/**",
                                 "/swagger-ui.html"
                         ).permitAll()
@@ -52,9 +54,10 @@ public class SecurityConfig {
                         .requestMatchers("/Employee/seniorhr/**").hasRole("SENIOR_HR")
                         .requestMatchers("/api/employees/**").hasAnyRole("HR", "SENIOR_HR", "MANAGER")
                         //Payroll
-                        .requestMatchers("/api/salary/**").hasAnyRole("HR", "SENIOR_HR", "MANAGER")
-                        .requestMatchers("/api/salary/history/**", "/api/salary/slip/**").hasAnyRole("USER", "HR", "SENIOR_HR")
+                        .requestMatchers("/api/salary/upload").hasAnyRole("HR", "SENIOR_HR")
+                        .requestMatchers("/api/salary/delete/{id}").hasAnyRole( "HR", "SENIOR_HR")
 
+                        .requestMatchers("/api/salary/all","/api/salary/delete/{id}").hasAnyRole("HR", "SENIOR_HR")
 
                         .anyRequest().authenticated()
                 );
