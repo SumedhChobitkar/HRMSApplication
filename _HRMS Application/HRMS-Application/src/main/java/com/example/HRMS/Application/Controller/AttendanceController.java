@@ -5,7 +5,9 @@ import com.example.HRMS.Application.Service.AttendanceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,17 +22,28 @@ public class AttendanceController {
     @Autowired
     private AttendanceService attendanceService;
 
-    @PostMapping("/signIn")
+   /* @PostMapping("/signIn")
     public ResponseEntity<?> signIn(@RequestBody CheckTimeDto checkInDto) {
         try {
             Attendance savedAttendance = attendanceService.markAttendance(checkInDto);
-            logger.info("Attendance marked for employeeId: {}", savedAttendance.getEmployeeId());
+            logger.info("Attendance marked for employeeId: {}", savedAttendance.getEmployeeId().getId());
             return ResponseEntity.ok(savedAttendance);
         } catch (Exception e) {
             logger.error("Error marking attendance", e);
             return ResponseEntity.status(500).body("Error marking attendance");
         }
+    }*/
+
+    @PostMapping("/signIn")
+    public ResponseEntity<?> markAttendance(@RequestBody CheckTimeDto checkInDto) {
+        try {
+            Attendance attendance = attendanceService.markAttendance(checkInDto);
+            return ResponseEntity.ok(attendance);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
+
     @PostMapping("/signOut")
     public ResponseEntity<?> signOut(@RequestBody CheckTimeDto checkOutDto) {
         try {
@@ -50,26 +63,30 @@ public class AttendanceController {
 
 
     @GetMapping("/getAllAttendance")
+    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER')")
     public ResponseEntity<List<Attendance>> getAllAttendance() {
-        return ResponseEntity.ok(attendanceService.getAllAttendance());
+        return attendanceService.getAllAttendance();
     }
 
     @GetMapping("/getAttendanceByid/{id}")
     public ResponseEntity<Attendance> getAttendanceById(@PathVariable Long id) {
-        return attendanceService.getAttendanceById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.status(404).build());
+        return attendanceService.getAttendanceById(id);
+    }
+
+    @PutMapping("/update/{id}")
+    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR')")
+    public ResponseEntity<?> updateAttendance(
+            @PathVariable Long id,
+            @RequestBody Attendance updatedAttendance
+    ) {
+        logger.info("Controller: Received request to update attendance with ID: {}", id);
+        return attendanceService.updateAttendance(id, updatedAttendance);
     }
 
     @DeleteMapping("/DeleteAttendanceByid/{id}")
-    public ResponseEntity<?> deleteAttendanceById(@PathVariable Long id) {
-        try {
-            attendanceService.deleteAttendanceById(id);
-            logger.info("Deleted attendance with ID: {}", id);
-            return ResponseEntity.ok("Attendance deleted successfully");
-        } catch (Exception e) {
-            logger.error("Error deleting attendance with ID: {}", id, e);
-            return ResponseEntity.status(500).body("Failed to delete attendance");
-        }
+    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER')")
+    public ResponseEntity<String> deleteAttendanceById(@PathVariable Long id) {
+        return attendanceService.deleteAttendanceById(id);
     }
+
 }
