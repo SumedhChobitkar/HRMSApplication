@@ -1,4 +1,5 @@
 package com.example.HRMS.Application.Entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.ZonedDateTime;
 import jakarta.persistence.*;
@@ -12,8 +13,6 @@ public class Attendance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long employeeId;
-
     private LocalDate date;
 
     private LocalTime clockIn;
@@ -22,7 +21,22 @@ public class Attendance {
 
     private String location;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id", nullable = false)
+    @JsonIgnore
+    private Employee employee;
 
+
+    // Getters and setters
+
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
 
     // Getters and Setters
     public Long getId() {
@@ -31,14 +45,6 @@ public class Attendance {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getEmployeeId() {
-        return employeeId;
-    }
-
-    public void setEmployeeId(Long employeeId) {
-        this.employeeId = employeeId;
     }
 
     public LocalDate getDate() {
