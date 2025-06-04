@@ -12,11 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+
+import static org.hibernate.query.sqm.tree.SqmNode.log;
 
 @Service
 public class AttendanceServiceImpl implements AttendanceService {
@@ -48,7 +51,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
          return attendanceRepository.save(attendance);
      }*/
-    public Attendance markAttendance(CheckTimeDto checkInDto) {
+    /*public Attendance markAttendance(CheckTimeDto checkInDto) {
         Long employeeId = checkInDto.getEmployeeId();
         LocalDate today = LocalDate.now();
 
@@ -72,9 +75,45 @@ public class AttendanceServiceImpl implements AttendanceService {
         attendance.setClockIn(LocalTime.now());
 
         return attendanceRepository.save(attendance);
-    }
+    }*/
+    public Attendance markAttendance(CheckTimeDto checkInDto) {
+        logger.info("Attempting to mark attendance for employeeId: {}", checkInDto.getEmployeeId());
 
-    public Attendance markSignOut(Long employeeId) {
+        if (checkInDto.getEmployeeId() == null) {
+            logger.warn("Employee ID is null in check-in DTO");
+            throw new RuntimeException("Employee ID cannot be null");
+        }
+
+        Optional<Employee> employeeOpt = employeeRepository.findById(checkInDto.getEmployeeId());
+        if (employeeOpt.isEmpty()) {
+            logger.warn("Employee not found for ID: {}", checkInDto.getEmployeeId());
+            throw new RuntimeException("Employee not found");
+        }
+
+        Employee employee = employeeOpt.get();
+        LocalDate today = LocalDate.now();
+
+        // Optional: prevent multiple sign-ins on same day
+        Optional<Attendance> existing = attendanceRepository.findByEmployeeIdAndDate(employee.getId(), today);
+        if (existing.isPresent()) {
+            logger.warn("Attendance already marked for employeeId {} on {}", employee.getId(), today);
+            throw new RuntimeException("Attendance already marked for today");
+        }
+
+        Attendance attendance = new Attendance();
+        attendance.setEmployee(employee); // Assuming Employee has a method to get ID
+        attendance.setClockIn(LocalTime.now());
+        attendance.setDate(today);
+        attendance.setLocation(checkInDto.getLocation());
+
+        Attendance saved = attendanceRepository.save(attendance);
+        logger.info("Attendance marked successfully with ID: {}", saved.getId());
+
+        return saved;
+
+}
+
+ /*   public Attendance markSignOut(Long employeeId) {
         LocalDate today = LocalDate.now();
 
         Attendance attendance = attendanceRepository
@@ -99,7 +138,38 @@ public class AttendanceServiceImpl implements AttendanceService {
             logger.info("Service: Found {} attendance records", attendances.size());
             return ResponseEntity.ok(attendances);
         }
+    }*/
+ public Attendance markSignOut(Long employeeId) {
+     Attendance attendance = (Attendance) attendanceRepository.findTodayByEmployeeId(employeeId)
+             .orElseThrow(() -> new RuntimeException("No sign-in record found"));
+
+     if (attendance.getClockOut() != null) {
+         throw new RuntimeException("Already signed out");
+     }
+
+     attendance.setClockOut(LocalTime.now());
+
+     Duration duration = Duration.between(attendance.getClockIn(), attendance.getClockOut());
+     String worked = String.format("%d hours %d minutes", duration.toHours(), duration.toMinutesPart());
+     attendance.setWorkedHours(worked);
+
+     log.info("Employee {} signed out at {}, worked: {}");
+
+     return attendanceRepository.save(attendance);
+ }
+
+    public ResponseEntity<List<Attendance>> getAllAttendance() {
+        List<Attendance> attendanceList = attendanceRepository.findAll();
+
+        if (attendanceList.isEmpty()) {
+            log.warn("No attendance records found.");
+            return ResponseEntity.noContent().build();
+        }
+
+        log.info("Fetched {} attendance records.");
+        return ResponseEntity.ok(attendanceList);
     }
+
 
     public ResponseEntity<Attendance> getAttendanceById(Long id) {
         logger.info("Service: Fetching attendance with ID: {}", id);

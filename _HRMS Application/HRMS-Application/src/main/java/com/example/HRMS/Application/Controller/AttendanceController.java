@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @CrossOrigin("*")
@@ -34,11 +34,35 @@ public class AttendanceController {
         }
     }*/
 
-    @PostMapping("/signIn")
+    /*@PostMapping("/signIn")
     public ResponseEntity<?> markAttendance(@RequestBody CheckTimeDto checkInDto) {
         try {
             Attendance attendance = attendanceService.markAttendance(checkInDto);
             return ResponseEntity.ok(attendance);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
+    }*/
+    @PostMapping("/signIn")
+    public ResponseEntity<?> markAttendance(@RequestBody CheckTimeDto checkInDto) {
+        try {
+            Attendance attendance = attendanceService.markAttendance(checkInDto);
+
+
+            // Set or get the employee ID and attendance ID using CheckTimeDto
+          //  checkInDto.setEmployeeId(attendance.getEmployee().getId());
+            //checkInDto.setId(attendance.getId());
+          //  checkInDto.setLocation(attendance.getLocation());
+            Map<String,Object> response = new HashMap<>();
+            response.put("employeeId", attendance.getEmployee().getId());
+            response.put("attendanceId", attendance.getId());
+            response.put("location", attendance.getLocation());
+            response.put("clockIn", attendance.getClockIn());
+            response.put("date", attendance.getDate());
+            response.put("message", "Attendance marked successfully");
+
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
