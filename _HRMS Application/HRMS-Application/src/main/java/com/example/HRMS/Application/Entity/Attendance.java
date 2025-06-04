@@ -3,10 +3,21 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.ZonedDateTime;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
+@Table(name = "attendances")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+
 public class Attendance {
 
     @Id
@@ -17,9 +28,19 @@ public class Attendance {
 
     private LocalTime clockIn;
 
+    public String getWorkedHours() {
+        return workedHours;
+    }
+
+    public void setWorkedHours(String workedHours) {
+        this.workedHours = workedHours;
+    }
+
     private LocalTime clockOut;
 
     private String location;
+
+    private String workedHours;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
