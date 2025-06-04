@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -25,13 +27,18 @@ public class SalaryController {
 
     @PostMapping("/upload")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR')")
-    public ResponseEntity<String> upload(@RequestParam MultipartFile file,
-                                         @RequestParam String uploadedBy,
-                                         @RequestParam String userEmail,
-                                         @RequestParam String role) throws IOException {
+    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file,
+                                         @RequestParam ("uploadedBy") String uploadedBy,
+                                         @RequestParam("userEmail") String userEmail,
+                                         @RequestParam ("role")String role) throws IOException {
         try {
             SalaryRecord record = salaryRecordService.upload(file, uploadedBy, userEmail);
-            return ResponseEntity.ok("Uploaded successfully with ID: " + record.getId());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Uploaded successfully");
+            response.put("id", record.getId());
+            return ResponseEntity.ok(response);
+
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
@@ -46,14 +53,14 @@ public class SalaryController {
 
     @GetMapping("/email/{userEmail}")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER','USER')")
-    public ResponseEntity<List<SalaryRecord>> getAllByUserEmail(@PathVariable String userEmail) {
+    public ResponseEntity<List<SalaryRecord>> getAllByUserEmail(@PathVariable ("userEmail") String userEmail) {
         return ResponseEntity.ok(salaryRecordService.getAllByUserEmail(userEmail));
     }
 
 
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER') ")
     @GetMapping("/id/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id) {
+    public ResponseEntity<?> getById(@PathVariable ("id") Long id) {
         SalaryRecord record = salaryRecordService.getById(id);
 //        if (role.equalsIgnoreCase("USER") && !record.getUserName().equalsIgnoreCase(userName)) {
 //            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");

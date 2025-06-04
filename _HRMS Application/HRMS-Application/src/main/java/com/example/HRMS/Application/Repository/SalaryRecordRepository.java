@@ -10,11 +10,14 @@ import java.util.Optional;
 
 public interface SalaryRecordRepository extends JpaRepository<SalaryRecord, Long> {
 
-    Optional<SalaryRecord> findByFileName(String fileName);
+   // Optional<SalaryRecord> findByFileName(String fileName);
     List<SalaryRecord> findAllByMonth(String month);
-    List<SalaryRecord> findByUserName(String userName);
 
-    // You can add methods to find by employee if needed
+    Optional<SalaryRecord> findByUserEmail(String userEmail);
+
+    Optional<SalaryRecord> findByUserEmailAndMonth(String email, String month);
+
     List<SalaryRecord> findByEmployee(Employee employee);
+
 //    Optional<SalaryRecord> findByEmployeeIdAndMonth(Long empId, String month);
 }
