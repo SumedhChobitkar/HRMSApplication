@@ -1,9 +1,7 @@
 package com.example.HRMS.Application.ServiceImpl;
 
-import com.example.HRMS.Application.Entity.BaseSalary;
 import com.example.HRMS.Application.Entity.Employee;
 import com.example.HRMS.Application.Entity.SalaryRecord;
-import com.example.HRMS.Application.Exception.EmployeeNotFoundException;
 import com.example.HRMS.Application.Exception.ResourceNotFoundException;
 import com.example.HRMS.Application.Repository.BaseSalaryRepository;
 import com.example.HRMS.Application.Repository.EmployeeRepository;
@@ -13,9 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.YearMonth;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
@@ -44,18 +40,49 @@ public class SalaryServiceImpl implements SalaryService {
         String month = LocalDateTime.now().getMonth()
                 .getDisplayName(TextStyle.FULL, Locale.ENGLISH) + "-" + LocalDateTime.now().getYear();
 
+        Optional<SalaryRecord> existingRecord = salaryRepo.findByUserEmailAndMonth(userEmail, month);
+        if (existingRecord.isPresent()) {
+            throw new IllegalArgumentException("Salary record for this employee already exists for the month: " + month);
+        }
+
+
         SalaryRecord record = SalaryRecord.builder()
                 .fileName(file.getOriginalFilename())
                 .fileType(file.getContentType())
                 .fileData(file.getBytes())
+                .userEmail(userEmail)
                 .uploadedBy(uploadedBy)
                 .uploadDate(LocalDateTime.now())
                 .month(month)
-                .employee(employee)   // link to employee entity here
+                .employee(employee)
                 .build();
 
         return salaryRepo.save(record);
     }
+
+//    @Override
+//    public Optional<SalaryRecord> getByUser(String userEmail) {
+//        Optional<SalaryRecord> user = salaryRepo.findByUserEmail(userEmail);
+//        if (user.isEmpty()) {
+//            throw new ResourceNotFoundException("User with email " + userEmail + " not found.");
+//        }
+//
+//        return user;
+//    }
+
+    @Override
+    public List<SalaryRecord> getAllByUserEmail(String userEmail) {
+        Employee employee = employeeRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with email: " + userEmail));
+
+        List<SalaryRecord> records = salaryRepo.findByEmployee(employee);
+        if (records.isEmpty()) {
+            throw new ResourceNotFoundException("No salary records found for email: " + userEmail);
+        }
+
+        return records;
+    }
+
 
 
     @Override
@@ -63,6 +90,22 @@ public class SalaryServiceImpl implements SalaryService {
         return salaryRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Salary record not found with ID " + id));
     }
+
+
+
+
+    @Override
+    public Optional<SalaryRecord> getByEmailAndMonth(String email, String month) {
+        Optional<SalaryRecord> record = salaryRepo.findByUserEmailAndMonth(email, month);
+        if (record.isEmpty()) {
+            throw new ResourceNotFoundException("No record found for user: " + email + " in month: " + month);
+        }
+        return record;
+
+    }
+
+
+
 
 //    @Override
 //    public SalaryRecord getByFileName(String fileName) {
@@ -83,12 +126,8 @@ public class SalaryServiceImpl implements SalaryService {
         salaryRepo.deleteById(id);
     }
 
-//    @Override
-//    public List<SalaryRecord> getByUser(String userName) {
-//        return salaryRepo.findAll().stream()
-//                .filter(record -> record.getUserName().equalsIgnoreCase(userName))
-//                .toList();
-//    }
+
+
 
 
     @Override

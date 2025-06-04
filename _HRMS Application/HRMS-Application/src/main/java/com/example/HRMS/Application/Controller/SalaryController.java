@@ -4,15 +4,16 @@ import com.example.HRMS.Application.Entity.SalaryRecord;
 import com.example.HRMS.Application.Service.SalaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin("*")
@@ -28,12 +29,29 @@ public class SalaryController {
                                          @RequestParam String uploadedBy,
                                          @RequestParam String userEmail,
                                          @RequestParam String role) throws IOException {
+        try {
+            SalaryRecord record = salaryRecordService.upload(file, uploadedBy, userEmail);
+            return ResponseEntity.ok("Uploaded successfully with ID: " + record.getId());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
 
-        SalaryRecord record = salaryRecordService.upload(file, uploadedBy, userEmail);
-        return ResponseEntity.ok("Uploaded successfully with ID: " + record.getId());
+//    @GetMapping("/email/{userEmail}")
+//    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER')")
+//    public ResponseEntity<Optional<SalaryRecord>> getByUser(@PathVariable String userEmail) {
+//        Optional<SalaryRecord> record = salaryRecordService.getByUser(userEmail);
+//        return ResponseEntity.ok(record);
+//    }
+
+    @GetMapping("/email/{userEmail}")
+    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER','USER')")
+    public ResponseEntity<List<SalaryRecord>> getAllByUserEmail(@PathVariable String userEmail) {
+        return ResponseEntity.ok(salaryRecordService.getAllByUserEmail(userEmail));
     }
 
 
+    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER') ")
     @GetMapping("/id/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
         SalaryRecord record = salaryRecordService.getById(id);
@@ -46,14 +64,18 @@ public class SalaryController {
                 .body(record.getFileData());
     }
 
-//    @GetMapping("/user/{userName}")
-//    public ResponseEntity<List<SalaryRecord>> getByUser(@PathVariable String userName,
-//                                                        @RequestParam String role) {
-//        if (!role.equalsIgnoreCase("USER")) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-//        }
-//        return ResponseEntity.ok(salaryRecordService.getByUser(userName));
-//    }
+
+    @GetMapping("/Email/month")
+    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER','USER') ")
+    public ResponseEntity<SalaryRecord> getSalaryByEmailAndMonth(
+            @RequestParam String email,
+            @RequestParam String month) {
+        SalaryRecord record = salaryRecordService.getByEmailAndMonth(email, month).orElse(null);
+        if (record == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(record);
+    }
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR')")

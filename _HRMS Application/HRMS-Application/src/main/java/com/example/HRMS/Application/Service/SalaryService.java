@@ -1,6 +1,5 @@
 package com.example.HRMS.Application.Service;
 
-import com.example.HRMS.Application.Entity.BaseSalary;
 import com.example.HRMS.Application.Entity.SalaryRecord;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,12 +11,16 @@ public interface SalaryService {
 
 
     SalaryRecord upload(MultipartFile file, String uploadedBy,String userName) throws IOException;
+
+    List<SalaryRecord> getAllByUserEmail(String userEmail);
+
     SalaryRecord getById(Long id);
     //SalaryRecord getByFileName(String fileName);
     List<SalaryRecord> getByMonth(String month);
     List<SalaryRecord> getAll();
     void deleteById(Long id);
-   // List<SalaryRecord> getByUser(String userName);
+  // Optional<SalaryRecord> getByUser(String userEmail);
+    public Optional<SalaryRecord> getByEmailAndMonth(String email, String month);
 
     // old code
 //    BaseSalary assignBaseSalary(Long empId, double amount);
