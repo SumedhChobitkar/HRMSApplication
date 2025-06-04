@@ -19,6 +19,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
 
     public SecurityConfig(JwtFilter jwtFilter) {
@@ -41,13 +43,12 @@ public class SecurityConfig {
                                 "/Employee/register",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
+                                "/swagger-ui.html",
                                 "/api/leaves/**",
                                 "/api/attendance/signIn",
                                 "/api/attendance/signOut",
-                                "/api/salary/id/{id}",
-                                "/api/salary/month/{month}",
-                                "/api/reviews/**",
-                                "/swagger-ui.html"
+                                "/api/reviews/**"
+
                         ).permitAll()
                         .requestMatchers("/Employee/user/**").hasRole("USER")
                         .requestMatchers("/Employee/manager/**").hasRole("MANAGER")
@@ -56,9 +57,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/employees/**").hasAnyRole("HR", "SENIOR_HR", "MANAGER")
                         //Payroll
                         .requestMatchers("/api/salary/upload").hasAnyRole("HR", "SENIOR_HR")
+                        .requestMatchers("/api/salary/all").hasAnyRole("HR", "SENIOR_HR")
                         .requestMatchers("/api/salary/delete/{id}").hasAnyRole( "HR", "SENIOR_HR")
-                        .requestMatchers("/api/salary/all","/api/salary/delete/{id}").hasAnyRole("HR", "SENIOR_HR")
-                        .requestMatchers("/api/salary/delete/{id}").hasAnyRole( "HR", "SENIOR_HR")
+                        .requestMatchers("/api/salary/id/**").hasAnyRole("HR", "SENIOR_HR", "MANAGER","USER")
+                       .requestMatchers("/api/salary/email/**").hasAnyRole("HR", "SENIOR_HR", "MANAGER","USER")
+                        .requestMatchers("/api/salary/Email/month").hasAnyRole("HR", "SENIOR_HR", "MANAGER", "USER")
+
+
                         //Attendance
                         .requestMatchers("/api/attendance/getAllAttendance").hasAnyRole( "HR", "SENIOR_HR")
                         .requestMatchers("/api/attendance/updateAttendance/{id}").hasAnyRole( "HR", "SENIOR_HR")
@@ -76,9 +81,8 @@ public class SecurityConfig {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }
-
-
 
 
 
