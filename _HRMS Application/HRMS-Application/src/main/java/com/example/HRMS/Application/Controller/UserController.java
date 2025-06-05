@@ -190,6 +190,7 @@ public class UserController {
             return ResponseEntity.status(401).body("Invalid Credentials");
         }
 
+        Employee employee=new Employee();
         User loggedInUser = user.get();
         String token = jwtUtil.generateToken(loggedInUser.getEmail(), loggedInUser.getRole().name());
 
@@ -199,6 +200,7 @@ public class UserController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("id", loggedInUser.getId());
+        response.put("EmployeeId",loggedInUser.getEmployee().getId());
         response.put("name", fullName.trim());
         response.put("email", loggedInUser.getEmail());
         response.put("token", token);
