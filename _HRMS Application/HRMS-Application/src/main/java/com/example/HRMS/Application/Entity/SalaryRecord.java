@@ -25,7 +25,7 @@ public class SalaryRecord {
     private String uploadedBy;
     private LocalDateTime uploadDate;
     private String month;
-    private String userName; // user for whom the file is uploaded
+    private String userEmail; // user for whom the file is uploaded
 
     @Lob
     @Column(length = 10485760)

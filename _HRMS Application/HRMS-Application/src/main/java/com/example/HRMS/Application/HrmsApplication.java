@@ -10,7 +10,9 @@ public class HrmsApplication {
 
 		SpringApplication.run(HrmsApplication.class, args);
 		System.out.println("Swagger Link:");
+		//System.out.println("http://localhost:8080/HRMS-Application/\n");
 		System.out.println("http://localhost:8080/swagger-ui/index.html");
+
 	}
 
 }

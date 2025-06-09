@@ -19,6 +19,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
 
     public SecurityConfig(JwtFilter jwtFilter) {
@@ -41,13 +43,22 @@ public class SecurityConfig {
                                 "/Employee/register",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
+                                "/swagger-ui.html",
                                 "/api/leaves/**",
                                 "/api/attendance/signIn",
                                 "/api/attendance/signOut",
                                 "/api/salary/id/{id}",
                                 "/api/salary/month/{month}",
                                 "/swagger-ui.html"
+                                "/api/reviews/**",
+                                "/api/holidays/id/{id}",
+                                "/api/holidays"
+
                         ).permitAll()
+
+                        // Swagger
+                       // .requestMatchers("/HRMS-Application/**").authenticated()
+
                         .requestMatchers("/Employee/user/**").hasRole("USER")
                         .requestMatchers("/Employee/manager/**").hasRole("MANAGER")
                         .requestMatchers("/Employee/hr/**").hasRole("HR")
@@ -55,13 +66,18 @@ public class SecurityConfig {
                         .requestMatchers("/api/employees/**").hasAnyRole("HR", "SENIOR_HR", "MANAGER")
                         //Payroll
                         .requestMatchers("/api/salary/upload").hasAnyRole("HR", "SENIOR_HR")
+                        .requestMatchers("/api/salary/all").hasAnyRole("HR", "SENIOR_HR")
                         .requestMatchers("/api/salary/delete/{id}").hasAnyRole( "HR", "SENIOR_HR")
-                        .requestMatchers("/api/salary/all","/api/salary/delete/{id}").hasAnyRole("HR", "SENIOR_HR")
-                        .requestMatchers("/api/salary/delete/{id}").hasAnyRole( "HR", "SENIOR_HR")
+                        .requestMatchers("/api/salary/id/**").hasAnyRole("HR", "SENIOR_HR", "MANAGER","USER")
+                       .requestMatchers("/api/salary/email/**").hasAnyRole("HR", "SENIOR_HR", "MANAGER","USER")
+                        .requestMatchers("/api/salary/Email/month").hasAnyRole("HR", "SENIOR_HR", "MANAGER", "USER")
+
+
                         //Attendance
                         .requestMatchers("/api/attendance/getAllAttendance").hasAnyRole( "HR", "SENIOR_HR")
                         .requestMatchers("/api/attendance/updateAttendance/{id}").hasAnyRole( "HR", "SENIOR_HR")
                         .requestMatchers("/api/attendance/deleteAttendanceById/{id}").hasAnyRole( "HR", "SENIOR_HR")
+
                         //PerformanceReview
                         .requestMatchers("/api/reviews/createReview").hasAnyRole( "MANAGER")
                         .requestMatchers("/api/reviews/getAllReviews").hasAnyRole( "HR", "SENIOR_HR","MANAGER")
@@ -69,6 +85,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/reviews/getReviewByEmail/{email}").hasAnyRole( "HR", "SENIOR_HR","MANAGER")
                         .requestMatchers("/api/reviews/updateReview/{id}").hasAnyRole( "MANAGER")
                         .requestMatchers("/api/reviews/DeleteById/{id}").hasAnyRole( "HR", "SENIOR_HR","MANAGER")
+
+
+                        //Holiday
+
+
+
                         .anyRequest().authenticated()
                 );
 
@@ -81,9 +103,8 @@ public class SecurityConfig {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }
-
-
 
 
 
