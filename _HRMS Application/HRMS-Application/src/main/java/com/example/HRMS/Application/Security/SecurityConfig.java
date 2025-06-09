@@ -47,9 +47,15 @@ public class SecurityConfig {
                                 "/api/leaves/**",
                                 "/api/attendance/signIn",
                                 "/api/attendance/signOut",
-                                "/api/reviews/**"
+                                "/api/reviews/**",
+                                "/api/holidays/id/{id}",
+                                "/api/holidays"
 
                         ).permitAll()
+
+                        // Swagger
+                       // .requestMatchers("/HRMS-Application/**").authenticated()
+
                         .requestMatchers("/Employee/user/**").hasRole("USER")
                         .requestMatchers("/Employee/manager/**").hasRole("MANAGER")
                         .requestMatchers("/Employee/hr/**").hasRole("HR")
@@ -68,6 +74,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/attendance/getAllAttendance").hasAnyRole( "HR", "SENIOR_HR")
                         .requestMatchers("/api/attendance/updateAttendance/{id}").hasAnyRole( "HR", "SENIOR_HR")
                         .requestMatchers("/api/attendance/deleteAttendanceById/{id}").hasAnyRole( "HR", "SENIOR_HR")
+
+                        //Holiday
+
 
                         .anyRequest().authenticated()
                 );
