@@ -35,6 +35,12 @@ public class LeaveRequestController {
     public ResponseEntity<?> createLeave(@RequestPart(value = "request") LeaveRequest request,
                                          @RequestPart(value = "file", required = false) MultipartFile file) {
         logger.info("Creating new leave request: {}", request);
+        logger.info("Creating new leave request for employeeId: {}", request.getEmployeeId());
+
+        if (request.getEmployeeId() == null) {
+            return ResponseEntity.badRequest().body("Employee ID is required.");
+        }
+
         if (file != null) {
             logger.info("File attached: {}", file.getOriginalFilename());
         }
@@ -95,7 +101,34 @@ public class LeaveRequestController {
         }
     }
 
-    @DeleteMapping("/DeleteLeaveById/{id}")
+    @GetMapping("/applyingTo")
+    public ResponseEntity<?> getApplyingToEmail() {
+        logger.info("Fetching HR email for applyingTo field");
+
+        String email = service.getApplyingToEmail();
+        if (email == null || email.isEmpty()) {
+            logger.error("HR email not found");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("HR email not configured");
+        }
+        return ResponseEntity.ok(email);
+    }
+
+    // 2. Get list of all employee emails for ccTo
+    @GetMapping("/ccToEmployees")
+    public ResponseEntity<?> getAllEmployeeEmails() {
+        logger.info("Fetching list of employee emails for ccTo");
+
+        List<String> emails =service.getAllEmployeeEmails();
+        if (emails.isEmpty()) {
+            logger.warn("No employees found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No employee emails found");
+        }
+
+        return ResponseEntity.ok(emails);
+    }
+
+
+@DeleteMapping("/DeleteLeaveById/{id}")
     public ResponseEntity<String> deleteLeave(@PathVariable Long id) {
         logger.info("Deleting leave request with ID: {}", id);
         try {

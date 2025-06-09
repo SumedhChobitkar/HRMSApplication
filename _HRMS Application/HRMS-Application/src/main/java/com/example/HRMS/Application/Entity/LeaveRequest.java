@@ -1,5 +1,6 @@
 package com.example.HRMS.Application.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,13 +31,15 @@ public class LeaveRequest {
     private String fileType;
     @Lob
     private byte[] data;
-
-
     @Enumerated(EnumType.STRING)
     private LeaveType leaveType;
     @Enumerated(EnumType.STRING)
     private LeaveStatus status;
 
+   /* @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id", nullable = false)
+    @JsonIgnore
+    private Employee employee;*/
 
 }
 
