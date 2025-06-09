@@ -14,6 +14,8 @@ public interface LeaveRequestService {
     public Optional<LeaveRequest> getLeaveRequestById(Long id);
     public List<LeaveRequest> getAllLeaveRequests();
     public void deleteLeaveRequest(Long id);
+    public String getApplyingToEmail();
+    public List<String> getAllEmployeeEmails();
 
 
 }

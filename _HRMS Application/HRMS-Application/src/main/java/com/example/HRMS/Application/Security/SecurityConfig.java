@@ -46,7 +46,6 @@ public class SecurityConfig {
                                 "/api/attendance/signOut",
                                 "/api/salary/id/{id}",
                                 "/api/salary/month/{month}",
-                                "/api/reviews/**",
                                 "/swagger-ui.html"
                         ).permitAll()
                         .requestMatchers("/Employee/user/**").hasRole("USER")
@@ -63,7 +62,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/attendance/getAllAttendance").hasAnyRole( "HR", "SENIOR_HR")
                         .requestMatchers("/api/attendance/updateAttendance/{id}").hasAnyRole( "HR", "SENIOR_HR")
                         .requestMatchers("/api/attendance/deleteAttendanceById/{id}").hasAnyRole( "HR", "SENIOR_HR")
-
+                        //PerformanceReview
+                        .requestMatchers("/api/reviews/createReview").hasAnyRole( "MANAGER")
+                        .requestMatchers("/api/reviews/getAllReviews").hasAnyRole( "HR", "SENIOR_HR","MANAGER")
+                        .requestMatchers("/api/reviews/getReviewByEmployeeId/{employeeId}").hasAnyRole( "HR", "SENIOR_HR","MANAGER")
+                        .requestMatchers("/api/reviews/getReviewByEmail/{email}").hasAnyRole( "HR", "SENIOR_HR","MANAGER")
+                        .requestMatchers("/api/reviews/updateReview/{id}").hasAnyRole( "MANAGER")
+                        .requestMatchers("/api/reviews/DeleteById/{id}").hasAnyRole( "HR", "SENIOR_HR","MANAGER")
                         .anyRequest().authenticated()
                 );
 
