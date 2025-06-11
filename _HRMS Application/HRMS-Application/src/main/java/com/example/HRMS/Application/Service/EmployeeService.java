@@ -13,4 +13,7 @@ public interface EmployeeService {
 
     Optional<Employee> findById(Long id);
 
+    void deleteEmployeeByEmail(String email);
+
+
 }
