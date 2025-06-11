@@ -23,9 +23,15 @@ public class SecurityConfig {
     private UserDetailsService userDetailsService;
 
 
-    public SecurityConfig(JwtFilter jwtFilter) {
+//    //public SecurityConfig(JwtFilter jwtFilter) {
+//        this.jwtFilter = jwtFilter;
+//    }
+
+    public SecurityConfig(JwtFilter jwtFilter, UserDetailsService userDetailsService) {
         this.jwtFilter = jwtFilter;
+        this.userDetailsService = userDetailsService;
     }
+
 
     @Bean
     public AuthenticationManager authManager(AuthenticationConfiguration config) throws Exception {
@@ -49,7 +55,7 @@ public class SecurityConfig {
                                 "/api/attendance/signOut",
                                 "/api/salary/id/{id}",
                                 "/api/salary/month/{month}",
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
                                 "/api/reviews/**",
                                 "/api/holidays/id/{id}",
                                 "/api/holidays"
@@ -103,6 +109,7 @@ public class SecurityConfig {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 
 }
 

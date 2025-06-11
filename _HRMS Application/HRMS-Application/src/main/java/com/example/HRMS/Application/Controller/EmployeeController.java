@@ -106,6 +106,14 @@ public class EmployeeController {
         return ResponseEntity.ok("Employee deleted successfully");
     }
 
+    @DeleteMapping("/by-email")
+    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR')")
+    public ResponseEntity<String> deleteEmployeeByEmail(@RequestParam("email") String email) {
+        logger.info("DELETE /api/employees/by-email called with email: {}", email);
+        employeeService.deleteEmployeeByEmail(email);
+        return ResponseEntity.ok("Employee deleted successfully");
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER')")
     public ResponseEntity<Employee> getEmployee(@PathVariable Long id) {
