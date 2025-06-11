@@ -36,4 +36,8 @@ public class Employee {
     @Lob
     private byte[] profilePicture;
 
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private User user;
+
+
 }

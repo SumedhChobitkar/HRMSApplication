@@ -4,6 +4,7 @@ import com.example.HRMS.Application.Entity.Employee;
 import com.example.HRMS.Application.Exception.EmployeeNotFoundException;
 import com.example.HRMS.Application.Repository.EmployeeRepository;
 import com.example.HRMS.Application.Service.EmployeeService;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -84,6 +85,18 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeRepository.deleteById(id);
         logger.info("Deleted employee ID: {}", id);
     }
+
+    @Override
+    @Transactional
+    public void deleteEmployeeByEmail(String email) {
+        Optional<Employee> employeeOpt = employeeRepository.findByEmail(email);
+        if (employeeOpt.isEmpty()) {
+            throw new EmployeeNotFoundException("Employee not found with email: " + email);
+        }
+        employeeRepository.deleteByEmail(email);
+        logger.info("Deleted employee with email: {}", email);
+    }
+
 
     @Override
     public Employee getEmployeeById(Long id) {
