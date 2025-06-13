@@ -50,6 +50,7 @@ public class Attendance {
     @Enumerated(EnumType.STRING)
     private AttendanceStatus status;
 
+    private String issingin;
     // Getters and setters
 
 

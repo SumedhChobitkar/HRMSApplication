@@ -106,7 +106,9 @@ public class AttendanceServiceImpl implements AttendanceService {
         attendance.setDate(today);
         attendance.setLocation(checkInDto.getLocation());
         attendance.setStatus(AttendanceStatus.PRESENT);
+        attendance.setIssingin("TRUE");
         Attendance saved = attendanceRepository.save(attendance);
+
         logger.info("Attendance marked successfully with ID: {}", saved.getId());
 
 
@@ -155,6 +157,8 @@ public class AttendanceServiceImpl implements AttendanceService {
      attendance.setWorkedHours(worked);
 
      log.info("Employee {} signed out at {}, worked: {}");
+
+     attendance.setIssingin("FALSE");
 
      return attendanceRepository.save(attendance);
  }
