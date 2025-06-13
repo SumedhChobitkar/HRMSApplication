@@ -2,10 +2,12 @@ package com.example.HRMS.Application.Service;
 
 import com.example.HRMS.Application.Entity.LeaveRequest;
 import com.example.HRMS.Application.Entity.LeaveStatus;
+import com.example.HRMS.Application.Entity.LeaveType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface LeaveRequestService {
@@ -16,6 +18,6 @@ public interface LeaveRequestService {
     public void deleteLeaveRequest(Long id);
     public String getApplyingToEmail();
     public List<String> getAllEmployeeEmails();
-
+    public Map<String, Object> getLeaveBalance(Long employeeId);
 
 }

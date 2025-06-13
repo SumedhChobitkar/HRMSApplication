@@ -13,10 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 @Service
 public class LeaveRequestServiceImpl implements LeaveRequestService {
@@ -28,8 +26,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @Autowired
     EmployeeRepository employeeRepository;
 
-    @Override
-    public LeaveRequest createLeaveRequest(LeaveRequest request, MultipartFile file) throws IOException {
+   /* public LeaveRequest createLeaveRequest(LeaveRequest request, MultipartFile file) throws IOException {
         String fileType = file.getContentType();
 
         request.setStatus(LeaveStatus.PENDING);
@@ -40,7 +37,26 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         // Set default status
 
         return repository.save(request);
+    }*/
+    @Override
+    public LeaveRequest createLeaveRequest(LeaveRequest request, MultipartFile file) throws IOException {
+        if (request.getStatus() == null) {
+            request.setStatus(LeaveStatus.PENDING); // Optional default
+        }
+
+        if (request.getLeaveType() == null) {
+            request.setLeaveType(LeaveType.CASUAL); // Optional default
+        }
+
+        if (file != null) {
+            request.setFileName(file.getOriginalFilename());
+            request.setFileType(file.getContentType());
+            request.setData(file.getBytes());
+        }
+
+        return repository.save(request);
     }
+
     public List<LeaveRequest> getAllLeaveRequests() {
         return repository.findAll();
     }
@@ -76,6 +92,51 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         logger.info("Fetched {} employee emails", emailList.size());
         return emailList;
     }
+
+   /* public Map<LeaveType, Long> getLeaveBalance(Long employeeId) {
+        logger.info("Calculating leave balance for employeeId: {}", employeeId);
+
+        List<LeaveRequest> approvedLeaves = repository
+                .findByEmployeeIdAndStatus(employeeId, LeaveStatus.APPROVED);
+
+        Map<LeaveType, Long> leaveCountMap = new EnumMap<>(LeaveType.class);
+
+        for (LeaveRequest leave : approvedLeaves) {
+            LeaveType type = leave.getLeaveType();
+            long days = ChronoUnit.DAYS.between(leave.getFromDate(), leave.getToDate()) + 1;
+
+            leaveCountMap.put(type, leaveCountMap.getOrDefault(type, 0L) + days);
+        }
+
+        logger.info("Leave balance calculated for employeeId: {} is {}", employeeId, leaveCountMap);
+        return leaveCountMap;
+    }*/
+    @Override
+    public Map<String, Object> getLeaveBalance(Long employeeId) {
+        logger.info("Calculating leave balance for employeeId: {}", employeeId);
+
+        List<LeaveRequest> approvedLeaves = repository
+                .findByEmployeeIdAndStatus(employeeId, LeaveStatus.APPROVED);
+
+        Map<LeaveType, Long> leaveCountMap = new EnumMap<>(LeaveType.class);
+        long totalLeaveDays = 0;
+
+        for (LeaveRequest leave : approvedLeaves) {
+            LeaveType type = leave.getLeaveType();
+            long days = ChronoUnit.DAYS.between(leave.getFromDate(), leave.getToDate()) + 1;
+
+            leaveCountMap.put(type, leaveCountMap.getOrDefault(type, 0L) + days);
+            totalLeaveDays += days;
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("totalLeaveDays", totalLeaveDays);
+        response.put("leaveBreakdown", leaveCountMap);
+
+        logger.info("Leave balance calculated for employeeId: {} -> {}", employeeId, response);
+        return response;
+    }
+
     public void deleteLeaveRequest(Long id) {
         logger.info("Attempting to delete leave request with ID: {}", id);
         if (!repository.existsById(id)) {
