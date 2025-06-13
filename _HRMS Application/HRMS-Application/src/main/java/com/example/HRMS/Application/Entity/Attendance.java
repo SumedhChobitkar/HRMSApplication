@@ -47,6 +47,8 @@ public class Attendance {
     @JsonIgnore
     private Employee employee;
 
+    @Enumerated(EnumType.STRING)
+    private AttendanceStatus status;
 
     // Getters and setters
 

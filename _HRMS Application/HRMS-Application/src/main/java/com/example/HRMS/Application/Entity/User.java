@@ -1,4 +1,5 @@
 package com.example.HRMS.Application.Entity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,6 +32,7 @@ public class User {
 
     @OneToOne
     @JoinColumn(name = "employee_id")
+    @JsonIgnoreProperties("employee")
     private Employee employee;
 
     @Lob

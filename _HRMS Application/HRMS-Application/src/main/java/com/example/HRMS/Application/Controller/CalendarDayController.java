@@ -17,6 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/calendar-days")
+@CrossOrigin("*")
 @Tag(name = "Employee Calendar", description = "View employee calendar attendance status")
 public class CalendarDayController {
 
@@ -51,18 +52,30 @@ public class CalendarDayController {
     }
 
 
-    @GetMapping("/{employeeId}/{year}/{month}")
-//    @Operation(
-//            summary = "Get calendar view for an employee",
-//            description = "Returns Present, Absent, Leave, Holiday, Working or Non-Working for each day",
-//            security = @SecurityRequirement(name = "bearerAuth")
-//    )
-    public ResponseEntity<List<Map<String, Object>>> getCalendar(
-            @PathVariable Long employeeId,
-            @PathVariable int year,
-            @PathVariable int month) {
+//    @GetMapping("/{employeeId}/{year}/{month}")
+////    @Operation(
+////            summary = "Get calendar view for an employee",
+////            description = "Returns Present, Absent, Leave, Holiday, Working or Non-Working for each day",
+////            security = @SecurityRequirement(name = "bearerAuth")
+////    )
+//    public ResponseEntity<List<Map<String, Object>>> getCalendar(
+//            @PathVariable Long employeeId,
+//            @PathVariable int year,
+//            @PathVariable int month) {
+//
+//        List<Map<String, Object>> calendar = calendarDayService.getEmployeeCalendar(employeeId, year, month);
+//        return ResponseEntity.ok(calendar);
+//    }
+
+
+    @GetMapping("/employee/{employeeId}/calendar")
+    public ResponseEntity<List<Map<String, Object>>> getEmployeeCalendar(
+            @PathVariable("id") Long employeeId,
+            @RequestParam int year,
+            @RequestParam int month) {
 
         List<Map<String, Object>> calendar = calendarDayService.getEmployeeCalendar(employeeId, year, month);
         return ResponseEntity.ok(calendar);
     }
+
 }

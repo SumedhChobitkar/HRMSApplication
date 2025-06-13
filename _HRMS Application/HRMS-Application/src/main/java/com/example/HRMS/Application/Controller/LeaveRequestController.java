@@ -81,7 +81,7 @@ public class LeaveRequestController {
     }
 
     @GetMapping("/getLeaveById/{id}")
-    public ResponseEntity<LeaveRequest> getLeaveById(@PathVariable Long id) {
+    public ResponseEntity<LeaveRequest> getLeaveById(@PathVariable("id") Long id) {
         logger.info("Fetching leave request by ID: {}", id);
         return service.getLeaveRequestById(id)
                 .map(ResponseEntity::ok)
@@ -92,7 +92,7 @@ public class LeaveRequestController {
     }
 
     @PutMapping("/updateStatusById/{id}/status")
-    public ResponseEntity<LeaveRequest> updateStatus(@PathVariable Long id, @RequestParam LeaveStatus status) {
+    public ResponseEntity<LeaveRequest> updateStatus(@PathVariable("id") Long id, @RequestParam LeaveStatus status) {
         logger.info("Updating status of leave request ID {} to {}", id, status);
         try {
             LeaveRequest updated = service.updateStatus(id, status);
@@ -151,7 +151,7 @@ public class LeaveRequestController {
 
 
 @DeleteMapping("/DeleteLeaveById/{id}")
-    public ResponseEntity<String> deleteLeave(@PathVariable Long id) {
+    public ResponseEntity<String> deleteLeave(@PathVariable("id") Long id) {
         logger.info("Deleting leave request with ID: {}", id);
         try {
             service.deleteLeaveRequest(id);

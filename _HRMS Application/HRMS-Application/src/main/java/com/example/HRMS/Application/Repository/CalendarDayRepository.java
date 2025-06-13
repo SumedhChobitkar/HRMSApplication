@@ -14,4 +14,5 @@ public interface CalendarDayRepository extends JpaRepository<CalendarDay, Long> 
 
     @Query("SELECT c FROM CalendarDay c WHERE MONTH(c.date) = :month AND YEAR(c.date) = :year")
     List<CalendarDay> findAllForMonth(int month, int year);
+    List<CalendarDay> findByDateBetween(LocalDate from, LocalDate to);
 }

@@ -86,7 +86,7 @@ public class SalaryController {
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR')")
-    public ResponseEntity<String> delete(@PathVariable Long id
+    public ResponseEntity<String> delete(@PathVariable("id") Long id
                                         ) {
         salaryRecordService.deleteById(id);
         return ResponseEntity.ok("Record deleted successfully");

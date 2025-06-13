@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("/api/holidays")
+@CrossOrigin("*")
 public class HolidayController {
 
     @Autowired
@@ -31,14 +32,21 @@ public class HolidayController {
 
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR')")
     @PutMapping("/{id}")
-    public ResponseEntity<Holiday> updateHoliday(@PathVariable Long id, @RequestBody Holiday holiday) {
+    public ResponseEntity<Holiday> updateHoliday(@PathVariable("id") Long id, @RequestBody Holiday holiday) {
         Holiday updated = holidayService.updateHoliday(id, holiday);
         return ResponseEntity.ok(updated);
     }
 
+//    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR')")
+//    @DeleteMapping("id/{id}")
+//    public ResponseEntity<String> deleteHoliday(@PathVariable Long id) {
+//        holidayService.deleteHoliday(id);
+//        return ResponseEntity.ok("Holiday deleted successfully");
+//    }
+
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR')")
     @DeleteMapping("id/{id}")
-    public ResponseEntity<String> deleteHoliday(@PathVariable Long id) {
+    public ResponseEntity<String> deleteHoliday(@PathVariable ("id") Long id) {
         holidayService.deleteHoliday(id);
         return ResponseEntity.ok("Holiday deleted successfully");
     }
@@ -52,7 +60,7 @@ public class HolidayController {
 
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<Holiday> getHolidayById(@PathVariable Long id) {
+    public ResponseEntity<Holiday> getHolidayById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(holidayService.getHolidayById(id));
     }
 }

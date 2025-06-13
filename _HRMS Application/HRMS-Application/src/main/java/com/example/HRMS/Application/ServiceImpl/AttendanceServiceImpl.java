@@ -2,6 +2,7 @@ package com.example.HRMS.Application.ServiceImpl;
 import com.example.HRMS.Application.Controller.AttendanceController;
 import com.example.HRMS.Application.DTO.CheckTimeDto;
 import com.example.HRMS.Application.Entity.Attendance;
+import com.example.HRMS.Application.Entity.AttendanceStatus;
 import com.example.HRMS.Application.Entity.Employee;
 import com.example.HRMS.Application.Repository.AttendanceRepository;
 import com.example.HRMS.Application.Repository.EmployeeRepository;
@@ -99,15 +100,15 @@ public class AttendanceServiceImpl implements AttendanceService {
             logger.warn("Attendance already marked for employeeId {} on {}", employee.getId(), today);
             throw new RuntimeException("Attendance already marked for today");
         }
-
         Attendance attendance = new Attendance();
         attendance.setEmployee(employee); // Assuming Employee has a method to get ID
         attendance.setClockIn(LocalTime.now());
         attendance.setDate(today);
         attendance.setLocation(checkInDto.getLocation());
-
+        attendance.setStatus(AttendanceStatus.PRESENT);
         Attendance saved = attendanceRepository.save(attendance);
         logger.info("Attendance marked successfully with ID: {}", saved.getId());
+
 
         return saved;
 
@@ -230,5 +231,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             return ResponseEntity.status(500).body("Failed to delete attendance");
         }
     }
+
+
 }
 

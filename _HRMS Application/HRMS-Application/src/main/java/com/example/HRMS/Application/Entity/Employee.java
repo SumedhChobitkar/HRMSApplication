@@ -1,5 +1,6 @@
 package com.example.HRMS.Application.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -31,12 +32,14 @@ public class Employee {
     private LocalDate joiningDate;
     private LocalDate exitDate;
 
+
     private String status; // Active, On Notice, Resigned
 
     @Lob
     private byte[] profilePicture;
 
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("user")
     private User user;
 
 

@@ -93,14 +93,14 @@ public class AttendanceController {
     }
 
     @GetMapping("/getAttendanceByid/{id}")
-    public ResponseEntity<Attendance> getAttendanceById(@PathVariable Long id) {
+    public ResponseEntity<Attendance> getAttendanceById(@PathVariable("id") Long id) {
         return attendanceService.getAttendanceById(id);
     }
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR')")
     public ResponseEntity<?> updateAttendance(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestBody Attendance updatedAttendance
     ) {
         logger.info("Controller: Received request to update attendance with ID: {}", id);
@@ -109,7 +109,7 @@ public class AttendanceController {
 
     @DeleteMapping("/DeleteAttendanceByid/{id}")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER')")
-    public ResponseEntity<String> deleteAttendanceById(@PathVariable Long id) {
+    public ResponseEntity<String> deleteAttendanceById(@PathVariable("id") Long id) {
         return attendanceService.deleteAttendanceById(id);
     }
 
