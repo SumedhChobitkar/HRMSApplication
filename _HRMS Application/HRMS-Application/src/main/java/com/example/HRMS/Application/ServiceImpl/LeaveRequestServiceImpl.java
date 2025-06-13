@@ -41,26 +41,29 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
         return repository.save(request);
     }
+    @Override
     public List<LeaveRequest> getAllLeaveRequests() {
         return repository.findAll();
     }
 
+    @Override
     public Optional<LeaveRequest> getLeaveRequestById(Long id) {
         return repository.findById(id);
     }
-
+    @Override
     public LeaveRequest updateStatus(Long id, LeaveStatus status) {
         LeaveRequest request = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Leave request not found with ID: " + id));
         request.setStatus(status);
         return repository.save(request);
     }
+    @Override
     public String getApplyingToEmail() {
-        String hrEmail = "hr@company.com";
+        String hrEmail = "hr@openfuturetechnologies.com";
         logger.debug("Returning hardcoded HR email: {}", hrEmail);
         return hrEmail;
     }
-
+    @Override
     // 2. Return all employee emails
     public List<String> getAllEmployeeEmails() {
         logger.debug("Fetching all employee emails");
@@ -76,6 +79,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         logger.info("Fetched {} employee emails", emailList.size());
         return emailList;
     }
+    @Override
     public void deleteLeaveRequest(Long id) {
         logger.info("Attempting to delete leave request with ID: {}", id);
         if (!repository.existsById(id)) {

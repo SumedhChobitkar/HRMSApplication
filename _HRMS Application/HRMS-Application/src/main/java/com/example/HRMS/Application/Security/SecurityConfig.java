@@ -53,12 +53,14 @@ public class SecurityConfig {
                                 "/api/leaves/**",
                                 "/api/attendance/signIn",
                                 "/api/attendance/signOut",
+                                "/api/attendance/getAttendanceByid/{id}",
                                 "/api/salary/id/{id}",
                                 "/api/salary/month/{month}",
                                 "/swagger-ui.html",
                                 "/api/reviews/**",
                                 "/api/holidays/id/{id}",
-                                "/api/holidays"
+                                "/api/holidays",
+                                "/api/calendar-days/**"
 
                         ).permitAll()
 

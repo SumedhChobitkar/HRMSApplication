@@ -92,18 +92,29 @@ public class EmployeeController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER')")
-    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
+    public ResponseEntity<Employee> updateEmployee(@PathVariable("id") Long id, @RequestBody Employee employee) {
         logger.info("PUT /api/employees/{} called", id);
         Employee updatedEmployee = employeeService.updateEmployee(id, employee);
         return ResponseEntity.ok(updatedEmployee);
     }
 
+//    @DeleteMapping("/{id}")
+//    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR')")
+//    public ResponseEntity<String> deleteEmployee(@PathVariable Long id) {
+//        logger.info("DELETE /api/employees/{} called", id);
+//        employeeService.deleteEmployee(id);
+//        return ResponseEntity.ok("Employee deleted successfully");
+//    }
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR')")
-    public ResponseEntity<String> deleteEmployee(@PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> deleteEmployee(@PathVariable("id") Long id) {
         logger.info("DELETE /api/employees/{} called", id);
         employeeService.deleteEmployee(id);
-        return ResponseEntity.ok("Employee deleted successfully");
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Employee deleted successfully");
+
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/by-email")
@@ -116,7 +127,7 @@ public class EmployeeController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER')")
-    public ResponseEntity<Employee> getEmployee(@PathVariable Long id) {
+    public ResponseEntity<Employee> getEmployee(@PathVariable("id") Long id) {
         logger.info("GET /api/employees/{} called", id);
         Employee employee = employeeService.getEmployeeById(id);
         return ResponseEntity.ok(employee);

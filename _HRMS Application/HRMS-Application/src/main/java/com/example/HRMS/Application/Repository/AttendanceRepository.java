@@ -19,5 +19,7 @@ Optional<Attendance> findAttendanceByEmployeeIdAndDate(@Param("employeeId") Long
     List<Attendance> findByEmployeeIdAndMonth(Long employeeId, int year, int month);
 
     boolean existsByEmployeeIdAndDate(Long employeeId, LocalDate date);
+
+    List<Attendance> findByEmployeeIdAndDateBetween(Long empId, LocalDate from, LocalDate to);
 }
 

@@ -43,7 +43,7 @@ public class PerformanceReviewController {
 
     @GetMapping("/getReviewByEmployeeId/{employeeId}")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER')")
-    public ResponseEntity<?> getReviewsByEmployeeId(@PathVariable Long employeeId) {
+    public ResponseEntity<?> getReviewsByEmployeeId(@PathVariable("id") Long employeeId) {
         try {
             List<PerformanceReview> reviews = reviewService.getReviewsByEmployeeId(employeeId);
 
@@ -70,7 +70,7 @@ public class PerformanceReviewController {
     }*/
     @GetMapping("/getReviewByEmail/{email}")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER')")
-    public ResponseEntity<?> getReviewsByEmployeeEmail(@PathVariable String email) {
+    public ResponseEntity<?> getReviewsByEmployeeEmail(@PathVariable("id") String email) {
         try {
             List<PerformanceReviewResponse> responses = reviewService.getReviewsByEmployeeEmail(email);
 
@@ -91,13 +91,13 @@ public class PerformanceReviewController {
     }
     @PutMapping("/updateReview/{id}")
     @PreAuthorize("hasAnyRole('MANAGER')")
-    public ResponseEntity<?> updateReview(@PathVariable Long id, @RequestBody PerformanceReview review) {
+    public ResponseEntity<?> updateReview(@PathVariable("id") Long id, @RequestBody PerformanceReview review) {
         return reviewService.updateReview(id, review);
     }
 
     @DeleteMapping("/DeleteById/{id}")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER')")
-    public ResponseEntity<?> deleteReview(@PathVariable Long id) {
+    public ResponseEntity<?> deleteReview(@PathVariable("id") Long id) {
         
         return reviewService.deleteReview(id);
     }
