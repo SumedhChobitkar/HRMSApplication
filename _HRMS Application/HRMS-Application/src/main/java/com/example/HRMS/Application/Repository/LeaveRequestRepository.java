@@ -14,5 +14,9 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long
             "((MONTH(l.fromDate) = :month AND YEAR(l.fromDate) = :year) OR (MONTH(l.toDate) = :month AND YEAR(l.toDate) = :year))")
     List<LeaveRequest> findApprovedLeavesForMonth(Long employeeId, int year, int month);
 
+
     List<LeaveRequest> findByEmployeeIdAndStatusAndFromDateLessThanEqualAndToDateGreaterThanEqual(Long employeeId, LeaveStatus leaveStatus, LocalDate end, LocalDate start);
+    List<LeaveRequest> findByEmployeeIdAndStatus(Long employeeId, LeaveStatus status);
+
+
 }

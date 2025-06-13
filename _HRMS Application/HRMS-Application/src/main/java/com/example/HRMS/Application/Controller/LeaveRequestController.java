@@ -1,6 +1,7 @@
 package com.example.HRMS.Application.Controller;
 import com.example.HRMS.Application.Entity.LeaveRequest;
 import com.example.HRMS.Application.Entity.LeaveStatus;
+import com.example.HRMS.Application.Entity.LeaveType;
 import com.example.HRMS.Application.Service.LeaveRequestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 
@@ -125,6 +127,26 @@ public class LeaveRequestController {
         }
 
         return ResponseEntity.ok(emails);
+    }
+    @GetMapping("/leaveBalance/{employeeId}")
+    public ResponseEntity<?> getLeaveBalance(@PathVariable Long employeeId) {
+        logger.info("Fetching leave balance for employeeId: {}", employeeId);
+
+        try {
+            Map<String, Object> leaveBalance = service.getLeaveBalance(employeeId);
+
+            if (leaveBalance.isEmpty()) {
+                logger.warn("No approved leave records found for employeeId: {}", employeeId);
+                return ResponseEntity.ok("No leave data found for the employee.");
+            }
+
+            return ResponseEntity.ok(leaveBalance);
+
+        } catch (Exception e) {
+            logger.error("Error occurred while fetching leave balance for employeeId: {}", employeeId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to fetch leave balance.");
+        }
     }
 
 
