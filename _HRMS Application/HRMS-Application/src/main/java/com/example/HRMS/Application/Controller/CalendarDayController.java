@@ -70,7 +70,7 @@ public class CalendarDayController {
 
     @GetMapping("/employee/{employeeId}/calendar")
     public ResponseEntity<List<Map<String, Object>>> getEmployeeCalendar(
-            @PathVariable("id") Long employeeId,
+            @PathVariable Long employeeId,
             @RequestParam int year,
             @RequestParam int month) {
 
