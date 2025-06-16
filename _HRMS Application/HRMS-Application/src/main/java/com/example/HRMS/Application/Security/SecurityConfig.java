@@ -60,7 +60,9 @@ public class SecurityConfig {
                                 "/api/reviews/**",
                                 "/api/holidays/id/{id}",
                                 "/api/holidays",
-                                "/api/calendar-days/**"
+                                "/api/calendar-days/**",
+                                "/Employee/update-password",
+                                "/Employee/update-profile-picture"
 
                         ).permitAll()
 

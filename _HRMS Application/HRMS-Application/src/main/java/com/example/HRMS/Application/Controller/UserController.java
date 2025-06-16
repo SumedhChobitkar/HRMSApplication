@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -108,81 +109,6 @@ public class UserController {
     }
 
 
-
-//    @PostMapping("/register")
-//    public ResponseEntity<?> register(@RequestBody User user) {
-//        User registered = userService.register(user);
-//        return ResponseEntity.ok(registered);
-//    }
-//
-//@PostMapping("/register")
-//public ResponseEntity<?> register(@RequestBody Map<String, Object> payload) {
-//
-//    String email = (String) payload.get("email");
-//    String password = (String) payload.get("password");
-//    String roleStr = (String) payload.get("role");
-//    Long employeeId = payload.get("employeeId") != null ? Long.valueOf(payload.get("employeeId").toString()) : null;
-//
-//    if (email == null || email.trim().isEmpty() || password == null || password.trim().isEmpty() || roleStr == null) {
-//        return ResponseEntity.badRequest().body("Email, password, and role are required.");
-//    }
-//
-//    Role role;
-//    try {
-//        role = Role.valueOf(roleStr.toUpperCase());
-//    } catch (IllegalArgumentException e) {
-//        return ResponseEntity.badRequest().body("Invalid role: " + roleStr);
-//    }
-//
-//    if (employeeId == null) {
-//        return ResponseEntity.badRequest().body("EmployeeId is required");
-//    }
-//
-//    Optional<Employee> employeeOpt = employeeService.findById(employeeId);
-//    if (employeeOpt.isEmpty()) {
-//        return ResponseEntity.badRequest().body("Employee profile not found");
-//    }
-//
-//    Employee employee = employeeOpt.get();
-//
-//    if (!employee.getRole().equals(role)) {
-//        return ResponseEntity.badRequest().body("Role mismatch between User and Employee");
-//    }
-//
-//    // Check if email is already registered
-//    if (userService.findByEmail(email).isPresent()) {
-//        Map<String, Object> error = new HashMap<>();
-//        error.put("status", 400);
-//        error.put("message", "Email already registered");
-//        return ResponseEntity.badRequest().body(error);
-//    }
-//
-//    User user = new User();
-//    user.setEmail(email);
-//    user.setPassword(passwordEncoder.encode(password));
-//    user.setRole(role);
-//    user.setEmployee(employee);
-//
-//    User registeredUser = userService.register(user);
-//    return ResponseEntity.ok(registeredUser);
-//}
-
-
-
-//    @PostMapping("/login")
-//    public ResponseEntity<?> login(@RequestBody Map<String, String> creds) {
-//        Optional<User> user = userService.login(creds.get("email"), creds.get("password"));
-//        if (user.isEmpty()) {
-//            return ResponseEntity.status(401).body("Invalid Credentials");
-//        }
-//
-//        String token = jwtUtil.generateToken(user.get().getEmail(), user.get().getRole().name());
-//
-//
-//
-//        return ResponseEntity.ok(Collections.singletonMap("token", token));
-//    }
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> creds) {
         Optional<User> user = userService.login(creds.get("email"), creds.get("password"));
@@ -205,6 +131,33 @@ public class UserController {
         response.put("email", loggedInUser.getEmail());
         response.put("token", token);
         return ResponseEntity.ok(response);
+    }
+
+
+    @PutMapping("/update-password")
+    public ResponseEntity<?> updatePassword(@RequestParam Long userId,
+                                            @RequestParam String newPassword) {
+        try {
+            userService.updatePassword(userId, newPassword);
+            return ResponseEntity.ok("Password updated successfully");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+
+    @PutMapping("/update-profile-picture")
+    public ResponseEntity<?> updateProfilePicture(@RequestParam Long userId,
+                                                  @RequestParam MultipartFile profilePicture) {
+        try {
+            userService.updateProfilePicture(userId, profilePicture);
+            return ResponseEntity.ok("Profile picture updated successfully");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading image");
+        }
     }
 
     @GetMapping("/Employee/user")

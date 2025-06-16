@@ -6,7 +6,10 @@ import com.example.HRMS.Application.Repository.UserRepository;
 import com.example.HRMS.Application.Service.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -54,7 +57,44 @@ public class UserServiceImmpl implements UserService {
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+
+    @Override
+    public void updatePassword(Long userId, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        user.setPassword(encoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+    @Override
+    public void updateProfilePicture(Long userId, MultipartFile profilePicture) throws IOException {
+        if (profilePicture == null || profilePicture.isEmpty()) {
+            throw new IllegalArgumentException("Profile picture is required");
+        }
+
+        String contentType = profilePicture.getContentType();
+        if (!isValidImageType(contentType)) {
+            throw new IllegalArgumentException("Only JPEG and PNG are allowed");
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        user.setProfilePicture(profilePicture.getBytes());
+        userRepository.save(user);
+    }
+
+    private boolean isValidImageType(String contentType) {
+        return contentType != null && (
+                contentType.equalsIgnoreCase("image/jpeg") ||
+                        contentType.equalsIgnoreCase("image/png") ||
+                        contentType.equalsIgnoreCase("image/jpg")
+        );
+    }
+
 }
+
 
 
 
