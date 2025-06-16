@@ -58,7 +58,7 @@ public class SalaryController {
     }
 
 
-    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER') ")
+    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER','USER') ")
     @GetMapping("/id/{id}")
     public ResponseEntity<?> getById(@PathVariable ("id") Long id) {
         SalaryRecord record = salaryRecordService.getById(id);

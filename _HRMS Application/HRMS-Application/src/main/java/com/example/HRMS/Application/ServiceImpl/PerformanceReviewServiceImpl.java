@@ -30,25 +30,6 @@ public class PerformanceReviewServiceImpl implements PerformanceReviewService {
     @Autowired
     private EmployeeRepository employeeRepo;
 
-//    public ResponseEntity<?> createReview(PerformanceReview review) {
-//        if (review.getEmployee() == null || review.getEmployee().getId() == null) {
-//            logger.error("Employee ID is required");
-//            return ResponseEntity.badRequest().body("Employee ID is required");
-//        }
-//
-//        Optional<Employee> empOpt = employeeRepo.findById(review.getEmployee().getId());
-//
-//        if (!empOpt.isPresent()) {
-//            logger.warn("Employee not found with ID: {}", review.getEmployee().getId());
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee not found");
-//        }
-//
-//        review.setEmployee(empOpt.get());
-//        PerformanceReview saved = reviewRepo.save(review);
-//        logger.info("Created performance review ID: {}", saved.getId());
-//        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-//    }
-
     public ResponseEntity<?> createReview(PerformanceReview review) {
         if (review.getEmployee() == null || review.getEmployee().getId() == null) {
             logger.error("Employee ID is required");
@@ -67,7 +48,7 @@ public class PerformanceReviewServiceImpl implements PerformanceReviewService {
 
         PerformanceReview saved = reviewRepo.save(review);
 
-        // ✅ Manually build a response map
+
         Map<String, Object> response = new HashMap<>();
         response.put("id", saved.getId());
         response.put("taskName", saved.getTaskName());
