@@ -39,7 +39,7 @@ public class Employee {
     private byte[] profilePicture;
 
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("user")
+    @JsonIgnoreProperties("employee")
     private User user;
 
 
