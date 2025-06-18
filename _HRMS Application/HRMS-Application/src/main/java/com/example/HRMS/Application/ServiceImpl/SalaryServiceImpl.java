@@ -1,5 +1,6 @@
 package com.example.HRMS.Application.ServiceImpl;
 
+import com.example.HRMS.Application.CommonUtil.ValidationClass;
 import com.example.HRMS.Application.Entity.Employee;
 import com.example.HRMS.Application.Entity.SalaryRecord;
 import com.example.HRMS.Application.Exception.ResourceNotFoundException;
@@ -33,9 +34,11 @@ public class SalaryServiceImpl implements SalaryService {
 
     @Override
     public SalaryRecord upload(MultipartFile file, String uploadedBy, String userEmail) throws IOException {
-        // Check if employee exists by email
+
+
         Employee employee = employeeRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with email: " + userEmail));
+
 
         String month = LocalDateTime.now().getMonth()
                 .getDisplayName(TextStyle.FULL, Locale.ENGLISH) + "-" + LocalDateTime.now().getYear();
@@ -56,19 +59,10 @@ public class SalaryServiceImpl implements SalaryService {
                 .month(month)
                 .employee(employee)
                 .build();
-
+        validateUserData(record);
         return salaryRepo.save(record);
     }
 
-//    @Override
-//    public Optional<SalaryRecord> getByUser(String userEmail) {
-//        Optional<SalaryRecord> user = salaryRepo.findByUserEmail(userEmail);
-//        if (user.isEmpty()) {
-//            throw new ResourceNotFoundException("User with email " + userEmail + " not found.");
-//        }
-//
-//        return user;
-//    }
 
     @Override
     public List<SalaryRecord> getAllByUserEmail(String userEmail) {
@@ -104,15 +98,6 @@ public class SalaryServiceImpl implements SalaryService {
 
     }
 
-
-
-
-//    @Override
-//    public SalaryRecord getByFileName(String fileName) {
-//        return salaryRepo.findByFileName(fileName)
-//                .orElseThrow(() -> new ResourceNotFoundException("File not found: " + fileName));
-//    }
-
     @Override
     public List<SalaryRecord> getByMonth(String month) {
         return salaryRepo.findAllByMonth(month);
@@ -126,58 +111,15 @@ public class SalaryServiceImpl implements SalaryService {
         salaryRepo.deleteById(id);
     }
 
-
-
-
-
     @Override
     public List<SalaryRecord> getAll() {
         return salaryRepo.findAll();
     }
 
-//    @Override
-//    public BaseSalary assignBaseSalary(Long empId, double amount) {
-//        Employee emp = employeeRepo.findById(empId).orElseThrow(() -> new RuntimeException("Employee not found"));
-//
-//        BaseSalary base = baseSalaryRepo.findByEmployeeId(empId).orElse(new BaseSalary());
-//        base.setEmployee(emp);
-//        base.setAmount(amount);
-//        return baseSalaryRepo.save(base);
-//    }
-//
-//    @Override
-//    public SalaryRecord generateSalary(Long empId, String month) {
-//        Employee emp = employeeRepo.findById(empId).orElseThrow(() -> new RuntimeException("Employee not found"));
-//        BaseSalary baseSalary = baseSalaryRepo.findByEmployeeId(empId).orElseThrow(() -> new RuntimeException("Base salary not set"));
-//
-//        int totalDays = YearMonth.parse(month).lengthOfMonth();
-//        int presentDays = (int) (Math.random() * totalDays); // Replace with attendance repo count
-//        int paidLeaves = 2; // replace with real leave logic
-//        int unpaidLeaves = totalDays - presentDays - paidLeaves;
-//        double deduction = (unpaidLeaves * baseSalary.getAmount()) / totalDays;
-//
-//        SalaryRecord record = new SalaryRecord();
-//        record.setEmployee(emp);
-//        record.setMonth(month);
-//        record.setBaseSalary(baseSalary.getAmount());
-//        record.setPresentDays(presentDays);
-//        record.setTotalWorkingDays(totalDays);
-//        record.setPaidLeaves(paidLeaves);
-//        record.setUnpaidLeaves(unpaidLeaves);
-//        record.setDeductions(deduction);
-//        record.setNetSalary(baseSalary.getAmount() - deduction);
-//        record.setGeneratedDate(LocalDate.now());
-//
-//        return salaryRepo.save(record);
-//    }
-//
-//    @Override
-//    public List<SalaryRecord> getSalaryHistory(Long empId) {
-//        return salaryRepo.findByEmployeeId(empId);
-//    }
-//
-//    @Override
-//    public Optional<SalaryRecord> getSalarySlip(Long empId, String month) {
-//        return salaryRepo.findByEmployeeIdAndMonth(empId, month);
-//    }
+    public static void validateUserData(SalaryRecord salaryRecord) {
+        if (!ValidationClass.EMAIL_PATTERN.matcher( salaryRecord.getUserEmail()).matches()) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+
+    }
 }

@@ -1,19 +1,17 @@
 package com.example.HRMS.Application.Controller;
 import com.example.HRMS.Application.Entity.LeaveRequest;
 import com.example.HRMS.Application.Entity.LeaveStatus;
-import com.example.HRMS.Application.Entity.LeaveType;
 import com.example.HRMS.Application.Service.LeaveRequestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;

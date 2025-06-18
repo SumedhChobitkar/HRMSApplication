@@ -1,4 +1,4 @@
-package com.example.HRMS.Application.Config;
+package com.example.HRMS.Application.Security;
 
 import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.Info;

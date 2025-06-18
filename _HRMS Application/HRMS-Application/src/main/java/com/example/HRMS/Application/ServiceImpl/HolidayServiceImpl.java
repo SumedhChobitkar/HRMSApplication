@@ -1,11 +1,11 @@
 package com.example.HRMS.Application.ServiceImpl;
 
+import com.example.HRMS.Application.CommonUtil.ValidationClass;
 import com.example.HRMS.Application.Entity.Holiday;
 import com.example.HRMS.Application.Exception.ResourceNotFoundException;
 import com.example.HRMS.Application.Repository.HolidayRepository;
 import com.example.HRMS.Application.Service.HolidayService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -76,24 +76,17 @@ public class HolidayServiceImpl implements HolidayService {
             throw new RuntimeException("Failed to delete holiday: " + e.getMessage());
         }
     }
-
-//    @Override
-//    public Page<Holiday> getHolidaysPaginated(int page, int size, String sortBy, String direction) {
-//        try {
-//            Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-//            Pageable pageable = PageRequest.of(page, size, sort);
-//            return holidayRepository.findAll(pageable);
-//        } catch (Exception e) {
-//            throw new RuntimeException("Failed to fetch paginated holidays: " + e.getMessage());
-//        }
-//    }
-
     private void validateHoliday(Holiday holiday) {
         if (holiday.getName() == null || holiday.getName().trim().isEmpty()) {
             throw new IllegalArgumentException("Holiday name must not be empty");
         }
         if (holiday.getDate() == null) {
             throw new IllegalArgumentException("Holiday date must not be null");
+        }
+    }
+    public static void validateUserData(Holiday holiday) {
+        if (!ValidationClass.NAME_PATTERN.matcher(holiday.getName()).matches()) {
+            throw new IllegalArgumentException("Invalid email format");
         }
     }
 }

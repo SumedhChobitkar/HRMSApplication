@@ -2,8 +2,6 @@ package com.example.HRMS.Application.Controller;
 
 import com.example.HRMS.Application.Entity.CalendarDay;
 import com.example.HRMS.Application.Service.CalendarDayService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -50,24 +48,6 @@ public class CalendarDayController {
     public ResponseEntity<List<CalendarDay>> getByMonth(@RequestParam int year, @RequestParam int month) {
         return ResponseEntity.ok(calendarDayService.getDaysByMonth(year, month));
     }
-
-
-//    @GetMapping("/{employeeId}/{year}/{month}")
-////    @Operation(
-////            summary = "Get calendar view for an employee",
-////            description = "Returns Present, Absent, Leave, Holiday, Working or Non-Working for each day",
-////            security = @SecurityRequirement(name = "bearerAuth")
-////    )
-//    public ResponseEntity<List<Map<String, Object>>> getCalendar(
-//            @PathVariable Long employeeId,
-//            @PathVariable int year,
-//            @PathVariable int month) {
-//
-//        List<Map<String, Object>> calendar = calendarDayService.getEmployeeCalendar(employeeId, year, month);
-//        return ResponseEntity.ok(calendar);
-//    }
-
-
     @GetMapping("/employee/{employeeId}/calendar")
     public ResponseEntity<List<Map<String, Object>>> getEmployeeCalendar(
             @PathVariable Long employeeId,

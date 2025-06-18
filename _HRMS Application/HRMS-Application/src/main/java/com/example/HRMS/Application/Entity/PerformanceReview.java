@@ -3,7 +3,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.List;
 @Entity
 @Table(name = "performance_reviews")
 @Data
@@ -23,8 +22,6 @@ public class PerformanceReview {
         @ManyToOne
         @JoinColumn(name = "employee_id", nullable = false)
         private Employee employee;
-
-        // Getters and Setters
     }
 
 

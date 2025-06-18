@@ -22,11 +22,6 @@ public class SecurityConfig {
     @Autowired
     private UserDetailsService userDetailsService;
 
-
-//    //public SecurityConfig(JwtFilter jwtFilter) {
-//        this.jwtFilter = jwtFilter;
-//    }
-
     public SecurityConfig(JwtFilter jwtFilter, UserDetailsService userDetailsService) {
         this.jwtFilter = jwtFilter;
         this.userDetailsService = userDetailsService;

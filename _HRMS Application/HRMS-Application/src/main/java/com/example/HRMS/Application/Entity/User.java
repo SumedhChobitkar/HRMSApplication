@@ -32,7 +32,7 @@ public class User {
 
     @OneToOne
     @JoinColumn(name = "employee_id")
-    @JsonIgnoreProperties("employee")
+    @JsonIgnoreProperties("user")
     private Employee employee;
 
     @Lob

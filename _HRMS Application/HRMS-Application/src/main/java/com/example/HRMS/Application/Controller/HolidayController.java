@@ -3,7 +3,6 @@ package com.example.HRMS.Application.Controller;
 import com.example.HRMS.Application.Entity.Holiday;
 import com.example.HRMS.Application.Service.HolidayService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -36,14 +35,6 @@ public class HolidayController {
         Holiday updated = holidayService.updateHoliday(id, holiday);
         return ResponseEntity.ok(updated);
     }
-
-//    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR')")
-//    @DeleteMapping("id/{id}")
-//    public ResponseEntity<String> deleteHoliday(@PathVariable Long id) {
-//        holidayService.deleteHoliday(id);
-//        return ResponseEntity.ok("Holiday deleted successfully");
-//    }
-
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR')")
     @DeleteMapping("id/{id}")
     public ResponseEntity<String> deleteHoliday(@PathVariable ("id") Long id) {
@@ -64,15 +55,3 @@ public class HolidayController {
         return ResponseEntity.ok(holidayService.getHolidayById(id));
     }
 }
-
-//    @GetMapping("/paginated")
-//    public ResponseEntity<Page<Holiday>> getPaginatedHolidays(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "5") int size,
-//            @RequestParam(defaultValue = "date") String sortBy,
-//            @RequestParam(defaultValue = "asc") String direction
-//    ) {
-//        Page<Holiday> result = holidayService.getHolidaysPaginated(page, size, sortBy, direction);
-//        return ResponseEntity.ok(result);
-//    }
-//}

@@ -26,18 +26,6 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @Autowired
     EmployeeRepository employeeRepository;
 
-   /* public LeaveRequest createLeaveRequest(LeaveRequest request, MultipartFile file) throws IOException {
-        String fileType = file.getContentType();
-
-        request.setStatus(LeaveStatus.PENDING);
-        request.setLeaveType(LeaveType.CASUAL);
-        request.setFileName(file.getOriginalFilename());
-        request.setFileType(fileType);
-        request.setData(file.getBytes());
-        // Set default status
-
-        return repository.save(request);
-    }*/
     @Override
     public LeaveRequest createLeaveRequest(LeaveRequest request, MultipartFile file) throws IOException {
         if (request.getStatus() == null) {
@@ -99,27 +87,6 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         return emailList;
     }
 
-//    @Override
-
-
-   /* public Map<LeaveType, Long> getLeaveBalance(Long employeeId) {
-        logger.info("Calculating leave balance for employeeId: {}", employeeId);
-
-        List<LeaveRequest> approvedLeaves = repository
-                .findByEmployeeIdAndStatus(employeeId, LeaveStatus.APPROVED);
-
-        Map<LeaveType, Long> leaveCountMap = new EnumMap<>(LeaveType.class);
-
-        for (LeaveRequest leave : approvedLeaves) {
-            LeaveType type = leave.getLeaveType();
-            long days = ChronoUnit.DAYS.between(leave.getFromDate(), leave.getToDate()) + 1;
-
-            leaveCountMap.put(type, leaveCountMap.getOrDefault(type, 0L) + days);
-        }
-
-        logger.info("Leave balance calculated for employeeId: {} is {}", employeeId, leaveCountMap);
-        return leaveCountMap;
-    }*/
     @Override
     public Map<String, Object> getLeaveBalance(Long employeeId) {
         logger.info("Calculating leave balance for employeeId: {}", employeeId);
@@ -156,26 +123,6 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         repository.deleteById(id);
         logger.info("Successfully deleted leave request with ID: {}", id);
     }
-
-   /* public void saveAttachment(MultipartFile file, Long leaveId) throws IOException {
-        String fileType = file.getContentType();
-
-        if (!allowedTypes.contains(fileType)) {
-            throw new IllegalArgumentException("Unsupported file type: " + fileType);
-        }
-
-        LeaveRequest leaveRequest = repository.findById(leaveId)
-                .orElseThrow(() -> new IllegalArgumentException("Leave request not found"));
-
-        LeaveRequest attachment = new LeaveRequest();
-        attachment.setFileName(file.getOriginalFilename());
-        attachment.setFileType(fileType);
-        attachment.setData(file.getBytes());
-        repository.save(attachment);
-    }
-    *
-    */
-
 
 }
 

@@ -1,6 +1,5 @@
 package com.example.HRMS.Application.Repository;
 
-import com.example.HRMS.Application.Entity.Attendance;
 import com.example.HRMS.Application.Entity.PerformanceReview;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
