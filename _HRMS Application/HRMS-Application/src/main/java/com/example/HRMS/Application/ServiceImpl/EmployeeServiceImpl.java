@@ -73,7 +73,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         logger.info("Deleted employee ID: {}", id);
     }
 
-    @Override
+   /* @Override
     @Transactional
     public void deleteEmployeeByEmail(String email) {
         Optional<Employee> employeeOpt = employeeRepository.findByEmail(email);
@@ -82,7 +82,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         employeeRepository.deleteByEmail(email);
         logger.info("Deleted employee with email: {}", email);
-    }
+    }*/
+   @Override
+   @Transactional
+   public void deleteEmployeeByEmail(String email) {
+       Optional<Employee> employeeOpt = employeeRepository.findByEmail(email);
+       if (employeeOpt.isEmpty()) {
+           throw new EmployeeNotFoundException("Employee not found with email: " + email);
+       }    employeeRepository.deleteByEmail(email);
+       logger.info("Deleted employee with email: {}", email);}
 
 
     @Override

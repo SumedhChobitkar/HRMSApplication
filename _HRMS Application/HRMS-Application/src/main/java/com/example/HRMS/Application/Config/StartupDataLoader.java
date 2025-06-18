@@ -50,7 +50,7 @@ public class StartupDataLoader {
 
             userRepository.save(user);
 
-            System.out.println("Default MANAGER user created: " + email + " / password: manager123");
+            System.out.println("Default MANAGER user created: " + email + " / password: Manager@123");
         };
     }
 }

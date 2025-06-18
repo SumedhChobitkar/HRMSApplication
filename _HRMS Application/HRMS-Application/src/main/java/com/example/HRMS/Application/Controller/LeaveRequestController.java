@@ -31,7 +31,7 @@ public class LeaveRequestController {
         this.service = service;
     }
 
-    @PostMapping(value = "/createLeave", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+  /*  @PostMapping(value = "/createLeave", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> createLeave(@RequestPart(value = "request") LeaveRequest request,
                                          @RequestPart(value = "file", required = false) MultipartFile file) {
         logger.info("Creating new leave request: {}", request);
@@ -68,7 +68,41 @@ public class LeaveRequestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Server error while creating leave request.");
         }
-    }
+    }*/
+  @PostMapping(value = "/createLeave", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<?> createLeave(@RequestPart("request") LeaveRequest request,
+                                       @RequestPart(value = "file", required = false) MultipartFile file) {
+      logger.info("Creating new leave request for employeeId: {}", request.getEmployeeId());
+
+      if (request.getEmployeeId() == null) {
+          return ResponseEntity.badRequest().body("Employee ID is required.");
+      }
+
+      try {
+          LocalDate fromDate = request.getFromDate();
+          LocalDate toDate = request.getToDate();
+          LocalDate today = LocalDate.now();
+
+          if (fromDate.isBefore(today.minusMonths(1))) {
+              return ResponseEntity.badRequest().body("You can only apply for leave going back 1 month.");
+          }
+
+          if (fromDate.isAfter(today.plusMonths(6))) {
+              return ResponseEntity.badRequest().body("You can't apply for leave more than 6 months in advance.");
+          }
+
+          LeaveRequest created = service.createLeaveRequest(request, file);
+          return ResponseEntity.ok(created);
+
+      } catch (IllegalArgumentException e) {
+          return ResponseEntity.badRequest().body(e.getMessage());
+      } catch (Exception e) {
+          logger.error("Error creating leave request: {}", e.getMessage(), e);
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                  .body("Server error while creating leave request.");
+      }
+  }
+
 
 
     @GetMapping("/getAllLeaves")
@@ -126,7 +160,7 @@ public class LeaveRequestController {
 
         return ResponseEntity.ok(emails);
     }
-    @GetMapping("/leaveBalance/{employeeId}")
+    /*@GetMapping("/leaveBalance/{employeeId}")
     public ResponseEntity<?> getLeaveBalance(@PathVariable Long employeeId) {
         logger.info("Fetching leave balance for employeeId: {}", employeeId);
 
@@ -145,10 +179,28 @@ public class LeaveRequestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to fetch leave balance.");
         }
+    }*/
+    @GetMapping("/leaveBalance/{employeeId}")
+    public ResponseEntity<?> getLeaveBalance(@PathVariable Long employeeId) {
+        logger.info("Fetching leave balance for employeeId: {}", employeeId);
+
+        try {
+            Map<String, Object> leaveBalance = service.getLeaveBalance(employeeId);
+            if (leaveBalance.isEmpty()) {
+                logger.warn("No approved leave records found for employeeId: {}", employeeId);
+                return ResponseEntity.ok("No leave data found for the employee.");
+            }
+            return ResponseEntity.ok(leaveBalance);
+        } catch (Exception e) {
+            logger.error("Error occurred while fetching leave balance for employeeId: {}", employeeId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to fetch leave balance.");
+        }
     }
 
 
-@DeleteMapping("/DeleteLeaveById/{id}")
+
+    @DeleteMapping("/DeleteLeaveById/{id}")
     public ResponseEntity<String> deleteLeave(@PathVariable("id") Long id) {
         logger.info("Deleting leave request with ID: {}", id);
         try {
