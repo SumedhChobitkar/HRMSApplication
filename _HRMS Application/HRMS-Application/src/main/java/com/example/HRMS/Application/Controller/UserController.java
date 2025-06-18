@@ -1,7 +1,6 @@
 package com.example.HRMS.Application.Controller;
 
 import com.example.HRMS.Application.Entity.Employee;
-import com.example.HRMS.Application.Entity.Role;
 import com.example.HRMS.Application.Entity.User;
 import com.example.HRMS.Application.Security.JwtService;
 

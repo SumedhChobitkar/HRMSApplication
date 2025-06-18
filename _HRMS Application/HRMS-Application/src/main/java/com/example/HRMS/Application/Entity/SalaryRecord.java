@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -34,20 +34,4 @@ public class SalaryRecord {
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
-//
-//    @ManyToOne
-//    private Employee employee;
-//
-//    private String month; // Format: YYYY-MM
-//    private double baseSalary;
-//    private int presentDays;
-//    private int totalWorkingDays;
-//    private int paidLeaves;
-//    private int unpaidLeaves;
-//    private double deductions;
-//    private double netSalary;
-//    private LocalDate generatedDate;
 }

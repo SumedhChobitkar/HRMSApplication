@@ -2,7 +2,6 @@ package com.example.HRMS.Application.Service;
 
 import com.example.HRMS.Application.Entity.LeaveRequest;
 import com.example.HRMS.Application.Entity.LeaveStatus;
-import com.example.HRMS.Application.Entity.LeaveType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

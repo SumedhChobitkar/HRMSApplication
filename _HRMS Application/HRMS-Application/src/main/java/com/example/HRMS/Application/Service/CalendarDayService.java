@@ -11,6 +11,5 @@ public interface CalendarDayService {
     CalendarDay getDay(LocalDate date);
     List<CalendarDay> getAllDays();
     List<CalendarDay> getDaysByMonth(int year, int month);
-    //List<Map<String, Object>> getEmployeeCalendar(Long employeeId, int year, int month);
     public List<Map<String, Object>> getEmployeeCalendar(Long employeeId, int year, int month);
 }

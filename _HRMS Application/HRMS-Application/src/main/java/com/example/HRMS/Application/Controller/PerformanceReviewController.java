@@ -1,7 +1,6 @@
 package com.example.HRMS.Application.Controller;
 import com.example.HRMS.Application.DTO.PerformanceReviewResponse;
 import com.example.HRMS.Application.Entity.PerformanceReview;
-import com.example.HRMS.Application.Exception.ResourceNotFoundException;
 import com.example.HRMS.Application.Service.PerformanceReviewService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,14 +35,9 @@ public class PerformanceReviewController {
         return reviewService.getAllReviews();
     }
 
-    /*@GetMapping("/{id}")
-    public ResponseEntity<?> getReviewById(@PathVariable Long id) {
-        return reviewService.getReviewById(id);
-    }*/
-
     @GetMapping("/getReviewByEmployeeId/{employeeId}")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER')")
-    public ResponseEntity<?> getReviewsByEmployeeId(@PathVariable("id") Long employeeId) {
+    public ResponseEntity<?> getReviewsByEmployeeId(@PathVariable Long employeeId) {
         try {
             List<PerformanceReview> reviews = reviewService.getReviewsByEmployeeId(employeeId);
 
@@ -63,11 +57,6 @@ public class PerformanceReviewController {
         }
     }
 
-    /*@GetMapping("/getEmployeeReviewById/{employeeId}")
-    public ResponseEntity<List<PerformanceReview>> getReviewsByEmployeeId(@PathVariable Long employeeId) {
-        List<PerformanceReview> reviews = reviewService.getReviewsByEmployeeId(employeeId);
-        return new ResponseEntity<>(reviews, HttpStatus.OK);
-    }*/
     @GetMapping("/getReviewByEmail/{email}")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER')")
     public ResponseEntity<?> getReviewsByEmployeeEmail(@PathVariable("id") String email) {

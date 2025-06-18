@@ -1,6 +1,6 @@
 package com.example.HRMS.Application.ServiceImpl;
 import com.example.HRMS.Application.DTO.PerformanceReviewResponse;
-import com.example.HRMS.Application.Entity.Attendance;
+
 import com.example.HRMS.Application.Entity.Employee;
 import com.example.HRMS.Application.Entity.PerformanceReview;
 import com.example.HRMS.Application.Repository.EmployeeRepository;
@@ -79,15 +79,7 @@ public class PerformanceReviewServiceImpl implements PerformanceReviewService {
         return ResponseEntity.ok(responseList);
     }
 
-    /*public ResponseEntity<?> getReviewById(Long id) {
-        Optional<PerformanceReview> opt = reviewRepo.findById(id);
-        if (opt.isPresent()) {
-            return ResponseEntity.ok(mapToResponse(opt.get()));
-        } else {
-            logger.warn("Review not found with ID: {}", id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Review not found");
-        }
-    }*/
+
     public List<PerformanceReview> getReviewsByEmployeeId(Long employeeId) {
         if (employeeId == null) {
             logger.error("Employee ID is null");

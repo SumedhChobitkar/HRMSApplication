@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -31,52 +31,6 @@ public class AttendanceServiceImpl implements AttendanceService {
     private AttendanceRepository attendanceRepository;
     @Autowired
     private EmployeeRepository employeeRepository;
-
-
-    /* @Override
-     public Attendance markAttendance(CheckTimeDto checkInDto) {
-         Long employeeId = checkInDto.getEmployeeId();
-         LocalDate today = LocalDate.now();
-         Optional<Attendance> existingAttendanceOpt =
-                 attendanceRepository.findByEmployeeIdAndDate(employeeId, today);
-
-         if (existingAttendanceOpt.isPresent()) {
-             throw new RuntimeException("Already signed in today");
-         }
-
-         Attendance attendance = new Attendance();
-         attendance.setEmployeeId(employeeId);
-         attendance.setLocation(checkInDto.getLocation());
-         attendance.setDate(today);
-         attendance.setClockIn(LocalTime.now());
-
-         return attendanceRepository.save(attendance);
-     }*/
-    /*public Attendance markAttendance(CheckTimeDto checkInDto) {
-        Long employeeId = checkInDto.getEmployeeId();
-        LocalDate today = LocalDate.now();
-
-        // Check if already marked
-        Optional<Attendance> existingAttendance =
-                attendanceRepository.findByEmployeeIdAndDate(employeeId, today);
-
-        if (existingAttendance.isPresent()) {
-            throw new RuntimeException("Already signed in today");
-        }
-
-        // Fetch employee
-        Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
-
-        // Create attendance record
-        Attendance attendance = new Attendance();
-        attendance.setEmployee(employee); // <-- important
-        attendance.setLocation(checkInDto.getLocation());
-        attendance.setDate(today);
-        attendance.setClockIn(LocalTime.now());
-
-        return attendanceRepository.save(attendance);
-    }*/
     public Attendance markAttendance(CheckTimeDto checkInDto) {
         logger.info("Attempting to mark attendance for employeeId: {}", checkInDto.getEmployeeId());
 
@@ -116,32 +70,6 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 }
 
- /*   public Attendance markSignOut(Long employeeId) {
-        LocalDate today = LocalDate.now();
-
-        Attendance attendance = attendanceRepository
-                .findByEmployeeIdAndDate(employeeId, today)
-                .orElseThrow(() -> new RuntimeException("Sign-in record not found for today"));
-
-        if (attendance.getClockOut() != null) {
-            throw new RuntimeException("Already signed out today");
-        }
-
-        attendance.setClockOut(LocalTime.now());
-
-        return attendanceRepository.save(attendance);
-    }
-    public ResponseEntity<List<Attendance>> getAllAttendance() {
-        logger.info("Service: Fetching all attendance records");
-        List<Attendance> attendances = attendanceRepository.findAll();
-        if (attendances.isEmpty()) {
-            logger.warn("Service: No attendance records found");
-            return ResponseEntity.status(404).body(null);
-        } else {
-            logger.info("Service: Found {} attendance records", attendances.size());
-            return ResponseEntity.ok(attendances);
-        }
-    }*/
  public Attendance markSignOut(Long employeeId) {
      Attendance attendance = (Attendance) attendanceRepository.findTodayByEmployeeId(employeeId)
              .orElseThrow(() -> new RuntimeException("No sign-in record found"));

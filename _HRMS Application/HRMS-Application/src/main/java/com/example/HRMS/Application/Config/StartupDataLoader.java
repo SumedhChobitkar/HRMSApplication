@@ -22,7 +22,7 @@ public class StartupDataLoader {
         PasswordEncoder passwordEncoder
     ) {
         return args -> {
-            String email = "manager@company.com";
+            String email = "manager@gmail.com";
 
             if (userRepository.findByEmail(email).isPresent()) {
                 System.out.println("Manager user already exists.");
@@ -44,7 +44,7 @@ public class StartupDataLoader {
 
             User user = new User();
             user.setEmail(email);
-            user.setPassword(passwordEncoder.encode("manager123")); // password
+            user.setPassword(passwordEncoder.encode("Manager@123")); // password
             user.setRole(Role.MANAGER);
             user.setEmployee(savedManager);
 

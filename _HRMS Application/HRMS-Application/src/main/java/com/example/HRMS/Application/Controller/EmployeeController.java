@@ -9,7 +9,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -81,43 +80,6 @@ public class EmployeeController {
         );
     }
 
-//    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER')")
-//    public ResponseEntity<?> addEmployee(
-//            @RequestPart("employee") String employeeJson,
-//
-//             @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture)
-//            {    ObjectMapper objectMapper = new ObjectMapper();
-//                objectMapper.registerModule(new JavaTimeModule());
-//                Map<String, Object> response = new HashMap<>();
-//                try {
-//                    Employee employee = objectMapper.readValue(employeeJson, Employee.class);
-//                    if (employeeRepository.existsByEmail(employee.getEmail())) {
-//                        response.put("message", "Email already exists");
-//
-//                        return ResponseEntity.badRequest().body(response);
-//                    }        if (profilePicture != null && !profilePicture.isEmpty()) {
-//                        String contentType = profilePicture.getContentType();
-//                        if (isValidImageType(contentType)) {
-//                            employee.setProfilePicture(profilePicture.getBytes());
-//                        } else {
-//                            response.put("message", "Invalid profile picture format. Only JPEG and PNG are supported.");
-//                            return ResponseEntity.badRequest().body(response);
-//                        }        }        Employee savedEmployee = employeeService.addEmployee(employee);
-//                    return ResponseEntity.ok(savedEmployee);    }
-//                catch (JsonProcessingException e) {
-//                    return ResponseEntity.badRequest().body("Invalid employee data format.");
-//                } catch (IOException e) {
-//                    return ResponseEntity.badRequest().body("Error processing profile picture.");
-//                }}
-
-//    @PostMapping
-//    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER')")
-//    public ResponseEntity<Employee> addEmployee(@RequestBody Employee employee) {
-//        logger.info("POST /api/employees called");
-//        Employee savedEmployee = employeeService.addEmployee(employee);
-//        return ResponseEntity.ok(savedEmployee);
-//    }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER')")
@@ -126,14 +88,6 @@ public class EmployeeController {
         Employee updatedEmployee = employeeService.updateEmployee(id, employee);
         return ResponseEntity.ok(updatedEmployee);
     }
-
-//    @DeleteMapping("/{id}")
-//    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR')")
-//    public ResponseEntity<String> deleteEmployee(@PathVariable Long id) {
-//        logger.info("DELETE /api/employees/{} called", id);
-//        employeeService.deleteEmployee(id);
-//        return ResponseEntity.ok("Employee deleted successfully");
-//    }
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR')")
     public ResponseEntity<Map<String, String>> deleteEmployee(@PathVariable("id") Long id) {

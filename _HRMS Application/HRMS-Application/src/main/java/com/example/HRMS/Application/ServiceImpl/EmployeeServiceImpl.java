@@ -1,5 +1,6 @@
 package com.example.HRMS.Application.ServiceImpl;
 
+import com.example.HRMS.Application.CommonUtil.ValidationClass;
 import com.example.HRMS.Application.Entity.Employee;
 import com.example.HRMS.Application.Exception.EmployeeNotFoundException;
 import com.example.HRMS.Application.Repository.EmployeeRepository;
@@ -24,6 +25,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee addEmployee(Employee employee) {
+        validateUserData(employee);
         if (employeeRepository.existsByEmail(employee.getEmail())) {
             logger.warn("Attempt to add employee with existing email: {}", employee.getEmail());
             throw new RuntimeException("Email already exists");
@@ -34,10 +36,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee updateEmployee(Long id, Employee employee) {
+        validateUserData(employee);
         Employee existing = employeeRepository.findById(id)
                 .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with id: " + id));
         logger.info("Updating employee ID: {}", id);
 
+        Optional<Employee> employeeWithEmail = employeeRepository.findByEmail(employee.getEmail());
+        if (employeeWithEmail.isPresent() && !employeeWithEmail.get().getId().equals(id)) {
+            throw new IllegalArgumentException("Email already exists for another employee.");
+        }
         existing.setFirstName(employee.getFirstName());
         existing.setLastName(employee.getLastName());
         existing.setEmail(employee.getEmail());
@@ -55,26 +62,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepository.save(existing);
     }
 
-
-//    @Override
-//    public Employee updateEmployee(Long id, Employee employee) {
-//        Employee existing = employeeRepository.findById(id)
-//                .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with id: " + id));
-//        logger.info("Updating employee ID: {}", id);
-//
-//        existing.setFirstName(employee.getFirstName());
-//        existing.setLastName(employee.getLastName());
-//        existing.setEmail(employee.getEmail());
-//        existing.setPhone(employee.getPhone());
-//        existing.setDepartment(employee.getDepartment());
-//        existing.setJobTitle(employee.getJobTitle());
-//        existing.setRole(employee.getRole());
-//        existing.setJoiningDate(employee.getJoiningDate());
-//        existing.setExitDate(employee.getExitDate());
-//        existing.setStatus(employee.getStatus());
-//
-//        return employeeRepository.save(existing);
-//    }
 
     @Override
     public void deleteEmployee(Long id) {
@@ -114,6 +101,25 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Optional<Employee> findById(Long id) {
         return employeeRepository.findById(id);
+    }
+
+
+        public static void validateUserData(Employee employee) {
+            if (!ValidationClass.NAME_PATTERN.matcher(employee.getFirstName()).matches()) {
+                throw new IllegalArgumentException("Invalid first name");
+            }
+            if (!ValidationClass.NAME_PATTERN.matcher(employee.getLastName()).matches()) {
+                throw new IllegalArgumentException("Invalid last name");
+            }
+            if (!ValidationClass.EMAIL_PATTERN.matcher(employee.getEmail()).matches()) {
+                throw new IllegalArgumentException("Invalid email format");
+            }
+            if (!ValidationClass.PHONE_PATTERN.matcher(employee.getPhone()).matches()) {
+                throw new IllegalArgumentException("Invalid phone number");
+            }
+            if (!ValidationClass.NAME_PATTERN.matcher(employee.getDepartment()).matches()) {
+                throw new IllegalArgumentException("Invalid phone number");
+            }
     }
 
 }

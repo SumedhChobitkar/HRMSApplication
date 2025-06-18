@@ -1,6 +1,7 @@
 package com.example.HRMS.Application.ServiceImpl;
 
-import com.example.HRMS.Application.Entity.Role;
+import com.example.HRMS.Application.CommonUtil.ValidationClass;
+
 import com.example.HRMS.Application.Entity.User;
 import com.example.HRMS.Application.Repository.UserRepository;
 import com.example.HRMS.Application.Service.UserService;
@@ -22,22 +23,9 @@ public class UserServiceImmpl implements UserService {
         this.userRepository = userRepository;
         this.encoder = encoder;
     }
-
-//    @Override
-//    public User register(User user) {
-//        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-//            throw new RuntimeException("Email already registered");
-//        }
-//
-//        if (user.getRole() == null) {
-//            user.setRole(Role.USER); // Default to USER role if none provided
-//        }
-//        user.setPassword(encoder.encode(user.getPassword()));
-//        return userRepository.save(user);
-//    }
-
     @Override
     public User register(User user) {
+        validateUserData(user);
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new RuntimeException("Email already registered");
         }
@@ -60,6 +48,11 @@ public class UserServiceImmpl implements UserService {
 
     @Override
     public void updatePassword(Long userId, String newPassword) {
+        User user1=new User();
+        if (!ValidationClass.PASSWORD_PATTERN.matcher(user1.getPassword()).matches()) {
+            throw new IllegalArgumentException("Invalid password ");
+        }
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
 
@@ -93,6 +86,14 @@ public class UserServiceImmpl implements UserService {
         );
     }
 
+    public static void validateUserData(User user) {
+        if (!ValidationClass.EMAIL_PATTERN.matcher(user.getEmail()).matches()) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+        if (!ValidationClass.PASSWORD_PATTERN.matcher(user.getPassword()).matches()) {
+            throw new IllegalArgumentException("Invalid password ");
+        }
+    }
 }
 
 
