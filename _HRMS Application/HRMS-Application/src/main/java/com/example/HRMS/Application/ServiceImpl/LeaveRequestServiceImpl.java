@@ -26,7 +26,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @Autowired
     EmployeeRepository employeeRepository;
 
-    @Override
+   /* @Override
     public LeaveRequest createLeaveRequest(LeaveRequest request, MultipartFile file) throws IOException {
         if (request.getStatus() == null) {
             request.setStatus(LeaveStatus.PENDING); // Optional default
@@ -41,14 +41,34 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
             request.setFileType(file.getContentType());
             request.setData(file.getBytes());
         }
-
         return repository.save(request);
-    }
+    }*/
+   @Override
+   public LeaveRequest createLeaveRequest(LeaveRequest request, MultipartFile file) throws IOException {
+       if (request.getStatus() == null) {
+           request.setStatus(LeaveStatus.PENDING);
+       }
+
+       if (request.getLeaveType() == null) {
+           request.setLeaveType(LeaveType.CASUAL);
+       }
+
+       // Validate file is mandatory for maternity leave
+       if (request.getLeaveType() == LeaveType.MATERNITY && file == null) {
+           throw new IllegalArgumentException("Document is required for maternity leave.");
+       }
+
+       if (file != null) {
+           request.setFileName(file.getOriginalFilename());
+           request.setFileType(file.getContentType());
+           request.setData(file.getBytes());
+       }
+
+       return repository.save(request);
+   }
+
 
     @Override
-
-
-
     public List<LeaveRequest> getAllLeaveRequests() {
         return repository.findAll();
     }
@@ -57,6 +77,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     public Optional<LeaveRequest> getLeaveRequestById(Long id) {
         return repository.findById(id);
     }
+
     @Override
     public LeaveRequest updateStatus(Long id, LeaveStatus status) {
         LeaveRequest request = repository.findById(id)
@@ -87,7 +108,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         return emailList;
     }
 
-    @Override
+  /*  @Override
     public Map<String, Object> getLeaveBalance(Long employeeId) {
         logger.info("Calculating leave balance for employeeId: {}", employeeId);
 
@@ -111,9 +132,65 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
         logger.info("Leave balance calculated for employeeId: {} -> {}", employeeId, response);
         return response;
-    }
+    }*/
+  @Override
+  public Map<String, Object> getLeaveBalance(Long employeeId) {
+      logger.info("Calculating leave balance for employeeId: {}", employeeId);
 
+      final Map<LeaveType, Long> allowedLeaves = Map.of(
+              LeaveType.SICK, 3L,
+              LeaveType.CASUAL, 3L,
+              LeaveType.PAID, 3L
+              // Maternity and Unpaid handled separately
+      );
 
+      List<LeaveRequest> approvedLeaves = repository.findByEmployeeIdAndStatus(employeeId, LeaveStatus.APPROVED);
+
+      Map<LeaveType, Long> usedLeaveMap = new EnumMap<>(LeaveType.class);
+      long unpaidDays = 0;
+      long maternityDays = 0;
+
+      for (LeaveRequest leave : approvedLeaves) {
+          LeaveType type = leave.getLeaveType();
+          long days = ChronoUnit.DAYS.between(leave.getFromDate(), leave.getToDate()) + 1;
+
+          switch (type) {
+              case UNPAID:
+                  unpaidDays += days;
+                  break;
+              case MATERNITY:
+                  maternityDays += days;
+                  break;
+              default:
+                  usedLeaveMap.put(type, usedLeaveMap.getOrDefault(type, 0L) + days);
+                  break;
+          }
+      }
+
+      Map<String, Object> balanceMap = new LinkedHashMap<>();
+      for (LeaveType type : allowedLeaves.keySet()) {
+          long used = usedLeaveMap.getOrDefault(type, 0L);
+          long allowed = allowedLeaves.get(type);
+          long remaining = Math.max(0, allowed - used);
+          long excess = Math.max(0, used - allowed);
+
+          balanceMap.put(type + "_used", used);
+          balanceMap.put(type + "_remaining", remaining);
+          balanceMap.put(type + "_excess_converted_to_unpaid", excess);
+          unpaidDays += excess;
+      }
+
+      // Add maternity separately
+      balanceMap.put("MATERNITY_used", maternityDays);
+      balanceMap.put("MATERNITY_max_allowed", 180);
+
+      // Add total unpaid
+      balanceMap.put("unpaid_total_days", unpaidDays);
+
+      logger.info("Leave balance response for employee {}: {}", employeeId, balanceMap);
+      return balanceMap;
+  }
+    @Override
     public void deleteLeaveRequest(Long id) {
         logger.info("Attempting to delete leave request with ID: {}", id);
         if (!repository.existsById(id)) {
