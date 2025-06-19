@@ -25,10 +25,11 @@ public class UserServiceImmpl implements UserService {
     }
     @Override
     public User register(User user) {
-        validateUserData(user);
+
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new RuntimeException("Email already registered");
         }
+
         return userRepository.save(user);
     }
 
@@ -46,19 +47,32 @@ public class UserServiceImmpl implements UserService {
         return userRepository.findByEmail(email);
     }
 
-    @Override
-    public void updatePassword(Long userId, String newPassword) {
-        User user1=new User();
-        if (!ValidationClass.PASSWORD_PATTERN.matcher(user1.getPassword()).matches()) {
-            throw new IllegalArgumentException("Invalid password ");
-        }
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
-
-        user.setPassword(encoder.encode(newPassword));
-        userRepository.save(user);
+//    @Override
+//    public void updatePassword(Long userId, String newPassword) {
+//        User user1=new User();
+//        if (!ValidationClass.PASSWORD_PATTERN.matcher(user1.getPassword()).matches()) {
+//            throw new IllegalArgumentException("Invalid password ");
+//        }
+//
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new NoSuchElementException("User not found"));
+//
+//        user.setPassword(encoder.encode(newPassword));
+//        userRepository.save(user);
+//    }
+@Override
+public void updatePassword(Long userId, String newPassword) {
+    if (!ValidationClass.PASSWORD_PATTERN.matcher(newPassword).matches()) {
+        throw new IllegalArgumentException("Invalid password");
     }
+
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+    user.setPassword(encoder.encode(newPassword));
+    userRepository.save(user);
+}
+
 
     @Override
     public void updateProfilePicture(Long userId, MultipartFile profilePicture) throws IOException {
@@ -78,6 +92,23 @@ public class UserServiceImmpl implements UserService {
         userRepository.save(user);
     }
 
+    @Override
+    public Optional<byte[]> getProfilePictureByIdOrEmail(Long userId, String email) {
+        Optional<User> userOptional = Optional.empty();
+
+        if (userId != null) {
+            userOptional = userRepository.findById(userId);
+        } else if (email != null && !email.isEmpty()) {
+            userOptional = userRepository.findByEmail(email);
+        }
+
+        if (userOptional.isPresent() && userOptional.get().getProfilePicture() != null) {
+            return Optional.of(userOptional.get().getProfilePicture());
+        }
+
+        return Optional.empty();
+    }
+
     private boolean isValidImageType(String contentType) {
         return contentType != null && (
                 contentType.equalsIgnoreCase("image/jpeg") ||
@@ -86,15 +117,11 @@ public class UserServiceImmpl implements UserService {
         );
     }
 
-    public static void validateUserData(User user) {
-        if (!ValidationClass.EMAIL_PATTERN.matcher(user.getEmail()).matches()) {
-            throw new IllegalArgumentException("Invalid email format");
-        }
-        if (!ValidationClass.PASSWORD_PATTERN.matcher(user.getPassword()).matches()) {
-            throw new IllegalArgumentException("Invalid password ");
-        }
+
     }
-}
+
+
+
 
 
 
