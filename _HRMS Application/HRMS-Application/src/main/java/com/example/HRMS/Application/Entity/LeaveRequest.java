@@ -24,7 +24,8 @@ public class LeaveRequest {
     private LocalDate toDate;
     private String reason;
     private String applyingTo;
-    private List<String> ccTo;
+//    private List<String> ccTo;
+private String ccTo;
     private String contactDetails;
     private String fileName;
     private String fileType;
@@ -34,6 +35,9 @@ public class LeaveRequest {
     private LeaveType leaveType;
     @Enumerated(EnumType.STRING)
     private LeaveStatus status;
+
+    @Transient
+    private List<String> ccToList;
 
 }
 

@@ -117,7 +117,7 @@ public class EmployeeController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER','USER')")
     public ResponseEntity<List<Employee>> getAllEmployees() {
         logger.info("GET /api/employees called");
         List<Employee> employees = employeeService.getAllEmployees();

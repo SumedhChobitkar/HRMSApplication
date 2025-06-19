@@ -63,6 +63,12 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
            request.setFileType(file.getContentType());
            request.setData(file.getBytes());
        }
+       if (request.getCcToList() != null && !request.getCcToList().isEmpty()) {
+           String ccFormatted = String.join(",", request.getCcToList());
+           request.setCcTo(ccFormatted);
+       }
+
+
 
        return repository.save(request);
    }

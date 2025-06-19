@@ -21,7 +21,7 @@ public class HolidayController {
 
 
     @Operation(summary = "Create a new holiday", security = @SecurityRequirement(name = "BearerAuth"))
-    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR')")
+    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR','MANAGER')")
     @PostMapping
     public ResponseEntity<Holiday> createHoliday(@RequestBody Holiday holiday) {
         Holiday created = holidayService.createHoliday(holiday);

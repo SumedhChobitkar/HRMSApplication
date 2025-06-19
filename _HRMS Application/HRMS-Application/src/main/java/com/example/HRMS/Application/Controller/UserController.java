@@ -1,5 +1,6 @@
 package com.example.HRMS.Application.Controller;
 
+import com.example.HRMS.Application.CommonUtil.ValidationClass;
 import com.example.HRMS.Application.Entity.Employee;
 import com.example.HRMS.Application.Entity.User;
 import com.example.HRMS.Application.Security.JwtService;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,13 +33,12 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private EmployeeService employeeService;
 
-    public UserController(UserService userService, JwtService jwtUtil, PasswordEncoder passwordEncoder,EmployeeService employeeService) {
+    public UserController(UserService userService, JwtService jwtUtil, PasswordEncoder passwordEncoder, EmployeeService employeeService) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
         this.employeeService = employeeService;
     }
-
 
 
     @PostMapping("/register")
@@ -51,6 +52,7 @@ public class UserController {
         try {
             User user = objectMapper.readValue(userData, User.class);
 
+            validateUserData(user);
             // Validate essential fields
             if (user.getEmail() == null || user.getEmail().trim().isEmpty() ||
                     user.getPassword() == null || user.getPassword().trim().isEmpty() ||
@@ -99,6 +101,7 @@ public class UserController {
             return ResponseEntity.badRequest().body("Error processing profile picture.");
         }
     }
+
     private boolean isValidImageType(String contentType) {
         return contentType != null && (
                 contentType.equalsIgnoreCase("image/jpeg") ||
@@ -115,7 +118,7 @@ public class UserController {
             return ResponseEntity.status(401).body("Invalid Credentials");
         }
 
-        Employee employee=new Employee();
+        Employee employee = new Employee();
         User loggedInUser = user.get();
         String token = jwtUtil.generateToken(loggedInUser.getEmail(), loggedInUser.getRole().name());
 
@@ -125,7 +128,7 @@ public class UserController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("id", loggedInUser.getId());
-        response.put("EmployeeId",loggedInUser.getEmployee().getId());
+        response.put("EmployeeId", loggedInUser.getEmployee().getId());
         response.put("name", fullName.trim());
         response.put("email", loggedInUser.getEmail());
         response.put("token", token);
@@ -159,26 +162,35 @@ public class UserController {
         }
     }
 
-    @GetMapping("/Employee/user")
-@PreAuthorize("hasRole('USER')")
-public  ResponseEntity<?> userOnly(){
-        return ResponseEntity.ok("Welcome User");
-}
-    @GetMapping("/hr/dashboard")
-    @PreAuthorize("hasRole('HR')")
-    public ResponseEntity<?> hrOnly() {
-        return ResponseEntity.ok("Welcome HR");
+    @GetMapping("/profile-picture")
+
+    public ResponseEntity<?> getProfilePicture(@RequestParam(required = false) Long userId,
+                                               @RequestParam(required = false) String email) {
+
+        if (userId == null && (email == null || email.trim().isEmpty())) {
+            return ResponseEntity.badRequest().body("Please provide either userId or email.");
+        }
+
+        Optional<byte[]> imageOptional = userService.getProfilePictureByIdOrEmail(userId, email);
+
+        if (imageOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User or profile picture not found");
+        }
+
+       return ResponseEntity.ok()
+        .contentType(MediaType.IMAGE_JPEG)
+        .body(imageOptional.get());
     }
 
-    @GetMapping("/manager/dashboard")
-    @PreAuthorize("hasRole('MANAGER')")
-    public ResponseEntity<?> managerOnly() {
-        return ResponseEntity.ok("Welcome Manager");
-    }
+    public static void validateUserData(User user) {
+        if (user.getEmail() == null || !ValidationClass.EMAIL_PATTERN.matcher(user.getEmail()).matches()) {
+            throw new IllegalArgumentException("Invalid email format.");
+        }
 
-    @GetMapping("/seniorhr/dashboard")
-    @PreAuthorize("hasRole('SENIORHR')")
-    public ResponseEntity<?> seniorHrOnly() {
-        return ResponseEntity.ok("Welcome Senior HR");
+        if (user.getPassword() == null || !ValidationClass.PASSWORD_PATTERN.matcher(user.getPassword()).matches()) {
+            throw new IllegalArgumentException(
+                    "Password must be at least 8 characters long and include: 1 uppercase, 1 lowercase, 1 digit, and 1 special character."
+            );
+        }
     }
 }
