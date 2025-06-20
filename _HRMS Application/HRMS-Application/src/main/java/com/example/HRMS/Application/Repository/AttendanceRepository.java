@@ -21,5 +21,7 @@ Optional<Attendance> findAttendanceByEmployeeIdAndDate(@Param("employeeId") Long
     boolean existsByEmployeeIdAndDate(Long employeeId, LocalDate date);
 
     List<Attendance> findByEmployeeIdAndDateBetween(Long empId, LocalDate from, LocalDate to);
+
+    Optional<Attendance> findByEmployeeIdAndDateAndClockOutIsNull(Long id, LocalDate localDate);
 }
 
