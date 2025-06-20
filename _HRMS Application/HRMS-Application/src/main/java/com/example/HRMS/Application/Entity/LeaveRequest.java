@@ -1,5 +1,6 @@
 package com.example.HRMS.Application.Entity;
 
+import com.example.HRMS.Application.Config.StringListConverter;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,8 +25,14 @@ public class LeaveRequest {
     private LocalDate toDate;
     private String reason;
     private String applyingTo;
+
+    @Convert(converter = StringListConverter.class)
+    @Column( columnDefinition = "TEXT")
+    private List<String> ccTo;
+
 //    private List<String> ccTo;
 private String ccTo;
+
     private String contactDetails;
     private String fileName;
     private String fileType;

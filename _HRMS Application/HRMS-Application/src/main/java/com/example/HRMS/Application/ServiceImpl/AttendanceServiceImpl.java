@@ -17,6 +17,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,66 +32,142 @@ public class AttendanceServiceImpl implements AttendanceService {
     private AttendanceRepository attendanceRepository;
     @Autowired
     private EmployeeRepository employeeRepository;
-    public Attendance markAttendance(CheckTimeDto checkInDto) {
-        logger.info("Attempting to mark attendance for employeeId: {}", checkInDto.getEmployeeId());
+//    public Attendance markAttendance(CheckTimeDto checkInDto) {
+//        logger.info("Attempting to mark attendance for employeeId: {}", checkInDto.getEmployeeId());
+//
+//        if (checkInDto.getEmployeeId() == null) {
+//            logger.warn("Employee ID is null in check-in DTO");
+//            throw new RuntimeException("Employee ID cannot be null");
+//        }
+//
+//        Optional<Employee> employeeOpt = employeeRepository.findById(checkInDto.getEmployeeId());
+//        if (employeeOpt.isEmpty()) {
+//            logger.warn("Employee not found for ID: {}", checkInDto.getEmployeeId());
+//            throw new RuntimeException("Employee not found");
+//        }
+//
+//        Employee employee = employeeOpt.get();
+//        LocalDate today = LocalDate.now();
+//
+//        // Optional: prevent multiple sign-ins on same day
+//        Optional<Attendance> existing = attendanceRepository.findByEmployeeIdAndDate(employee.getId(), today);
+//        if (existing.isPresent()) {
+//            logger.warn("Attendance already marked for employeeId {} on {}", employee.getId(), today);
+//            throw new RuntimeException("Attendance already marked for today");
+//        }
+//        Attendance attendance = new Attendance();
+//        attendance.setEmployee(employee); // Assuming Employee has a method to get ID
+//        attendance.setClockIn(LocalTime.now());
+//        attendance.setDate(today);
+//        attendance.setLocation(checkInDto.getLocation());
+//        attendance.setStatus(AttendanceStatus.PRESENT);
+//        attendance.setIssingin("TRUE");
+//        Attendance saved = attendanceRepository.save(attendance);
+//
+//        logger.info("Attendance marked successfully with ID: {}", saved.getId());
+//
+//
+//        return saved;
+//
+//}
+//
+// public Attendance markSignOut(Long employeeId) {
+//     Attendance attendance = (Attendance) attendanceRepository.findTodayByEmployeeId(employeeId)
+//             .orElseThrow(() -> new RuntimeException("No sign-in record found"));
+//
+//     if (attendance.getClockOut() != null) {
+//         throw new RuntimeException("Already signed out");
+//     }
+//
+//     attendance.setClockOut(LocalTime.now());
+//
+//     Duration duration = Duration.between(attendance.getClockIn(), attendance.getClockOut());
+//     String worked = String.format("%d hours %d minutes", duration.toHours(), duration.toMinutesPart());
+//     attendance.setWorkedHours(worked);
+//
+//     log.info("Employee {} signed out at {}, worked: {}");
+//
+//     attendance.setIssingin("FALSE");
+//
+//     return attendanceRepository.save(attendance);
+// }
+public Attendance markAttendance(CheckTimeDto checkInDto) {
+    logger.info("Attempting to mark attendance for employeeId: {}", checkInDto.getEmployeeId());
 
-        if (checkInDto.getEmployeeId() == null) {
-            logger.warn("Employee ID is null in check-in DTO");
-            throw new RuntimeException("Employee ID cannot be null");
+    if (checkInDto.getEmployeeId() == null) {
+        throw new RuntimeException("Employee ID cannot be null");
+    }
+
+    Optional<Employee> employeeOpt = employeeRepository.findById(checkInDto.getEmployeeId());
+    if (employeeOpt.isEmpty()) {
+        throw new RuntimeException("Employee not found");
+    }
+
+    Employee employee = employeeOpt.get();
+
+    ZoneId zone = ZoneId.of("Asia/Kolkata");
+    LocalDate today = LocalDate.now(zone);
+    LocalTime now = LocalTime.now(zone);
+
+    // ✅ Auto sign-out for previous unclosed attendance
+    Optional<Attendance> yesterdayPending = attendanceRepository.findByEmployeeIdAndDateAndClockOutIsNull(employee.getId(), today.minusDays(1));
+    if (yesterdayPending.isPresent()) {
+        Attendance pending = yesterdayPending.get();
+        pending.setClockOut(LocalTime.of(23, 59)); // Sign out at 11:59 PM
+        Duration duration = Duration.between(pending.getClockIn(), pending.getClockOut());
+        String worked = String.format("%d hours %d minutes", duration.toHours(), duration.toMinutesPart());
+        pending.setWorkedHours(worked);
+        pending.setIssingin("FALSE");
+
+        if (duration.toHours() < 9) {
+            pending.setStatus(AttendanceStatus.HALF_DAY);
         }
 
-        Optional<Employee> employeeOpt = employeeRepository.findById(checkInDto.getEmployeeId());
-        if (employeeOpt.isEmpty()) {
-            logger.warn("Employee not found for ID: {}", checkInDto.getEmployeeId());
-            throw new RuntimeException("Employee not found");
-        }
+        attendanceRepository.save(pending);
+        logger.info("Auto signed out yesterday's attendance for employeeId: {}", employee.getId());
+    }
 
-        Employee employee = employeeOpt.get();
-        LocalDate today = LocalDate.now();
+    // ✅ Prevent duplicate sign-in today
+    Optional<Attendance> existing = attendanceRepository.findByEmployeeIdAndDate(employee.getId(), today);
+    if (existing.isPresent()) {
+        throw new RuntimeException("Attendance already marked for today");
+    }
 
-        // Optional: prevent multiple sign-ins on same day
-        Optional<Attendance> existing = attendanceRepository.findByEmployeeIdAndDate(employee.getId(), today);
-        if (existing.isPresent()) {
-            logger.warn("Attendance already marked for employeeId {} on {}", employee.getId(), today);
-            throw new RuntimeException("Attendance already marked for today");
-        }
-        Attendance attendance = new Attendance();
-        attendance.setEmployee(employee); // Assuming Employee has a method to get ID
-        attendance.setClockIn(LocalTime.now());
-        attendance.setDate(today);
-        attendance.setLocation(checkInDto.getLocation());
-        attendance.setStatus(AttendanceStatus.PRESENT);
-        attendance.setIssingin("TRUE");
-        Attendance saved = attendanceRepository.save(attendance);
+    Attendance attendance = new Attendance();
+    attendance.setEmployee(employee);
+    attendance.setClockIn(now);
+    attendance.setDate(today);
+    attendance.setLocation(checkInDto.getLocation());
+    attendance.setStatus(AttendanceStatus.PRESENT);
+    attendance.setIssingin("TRUE");
 
-        logger.info("Attendance marked successfully with ID: {}", saved.getId());
+    Attendance saved = attendanceRepository.save(attendance);
+    logger.info("Attendance marked successfully with ID: {}", saved.getId());
 
-
-        return saved;
-
+    return saved;
 }
+    public Attendance markSignOut(Long employeeId) {
+        ZoneId zone = ZoneId.of("Asia/Kolkata");
+        LocalDate today = LocalDate.now(zone);
 
- public Attendance markSignOut(Long employeeId) {
-     Attendance attendance = (Attendance) attendanceRepository.findTodayByEmployeeId(employeeId)
-             .orElseThrow(() -> new RuntimeException("No sign-in record found"));
+        Attendance attendance = attendanceRepository.findByEmployeeIdAndDateAndClockOutIsNull(employeeId, today)
+                .orElseThrow(() -> new RuntimeException("No active sign-in record found for today"));
 
-     if (attendance.getClockOut() != null) {
-         throw new RuntimeException("Already signed out");
-     }
+        LocalTime now = LocalTime.now(zone);
+        attendance.setClockOut(now);
 
-     attendance.setClockOut(LocalTime.now());
+        Duration duration = Duration.between(attendance.getClockIn(), now);
+        String worked = String.format("%d hours %d minutes", duration.toHours(), duration.toMinutesPart());
+        attendance.setWorkedHours(worked);
+        attendance.setIssingin("FALSE");
 
-     Duration duration = Duration.between(attendance.getClockIn(), attendance.getClockOut());
-     String worked = String.format("%d hours %d minutes", duration.toHours(), duration.toMinutesPart());
-     attendance.setWorkedHours(worked);
+        if (duration.toHours() < 9) {
+            attendance.setStatus(AttendanceStatus.HALF_DAY);
+        }
 
-     log.info("Employee {} signed out at {}, worked: {}");
-
-     attendance.setIssingin("FALSE");
-
-     return attendanceRepository.save(attendance);
- }
-
+        log.info("Employee {} signed out at {}, worked: {}");
+        return attendanceRepository.save(attendance);
+    }
     public ResponseEntity<List<Attendance>> getAllAttendance() {
         List<Attendance> attendanceList = attendanceRepository.findAll();
 
