@@ -26,9 +26,9 @@ public class LeaveRequest {
     private String reason;
     private String applyingTo;
 
-    @Convert(converter = StringListConverter.class)
-    @Column( columnDefinition = "TEXT")
-    private List<String> ccTo;
+    // @Convert(converter = StringListConverter.class)
+    // @Column( columnDefinition = "TEXT")
+    // private List<String> ccTo;
 
 //    private List<String> ccTo;
 private String ccTo;
