@@ -181,6 +181,13 @@ public class UserController {
         .contentType(MediaType.IMAGE_JPEG)
         .body(imageOptional.get());
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        Optional<User> userOptional = userService.findById(id);
+        return userOptional
+                .<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
     public static void validateUserData(User user) {
         if (user.getEmail() == null || !ValidationClass.EMAIL_PATTERN.matcher(user.getEmail()).matches()) {

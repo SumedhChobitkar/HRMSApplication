@@ -47,19 +47,6 @@ public class UserServiceImmpl implements UserService {
         return userRepository.findByEmail(email);
     }
 
-//    @Override
-//    public void updatePassword(Long userId, String newPassword) {
-//        User user1=new User();
-//        if (!ValidationClass.PASSWORD_PATTERN.matcher(user1.getPassword()).matches()) {
-//            throw new IllegalArgumentException("Invalid password ");
-//        }
-//
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new NoSuchElementException("User not found"));
-//
-//        user.setPassword(encoder.encode(newPassword));
-//        userRepository.save(user);
-//    }
 @Override
 public void updatePassword(Long userId, String newPassword) {
     if (!ValidationClass.PASSWORD_PATTERN.matcher(newPassword).matches()) {
@@ -108,6 +95,12 @@ public void updatePassword(Long userId, String newPassword) {
 
         return Optional.empty();
     }
+
+    @Override
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
+    }
+
 
     private boolean isValidImageType(String contentType) {
         return contentType != null && (

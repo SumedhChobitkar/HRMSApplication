@@ -114,19 +114,19 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         public static void validateUserData(Employee employee) {
             if (!ValidationClass.NAME_PATTERN.matcher(employee.getFirstName()).matches()) {
-                throw new IllegalArgumentException("Invalid first name");
+                throw new IllegalArgumentException("Invalid first name.");
             }
             if (!ValidationClass.NAME_PATTERN.matcher(employee.getLastName()).matches()) {
-                throw new IllegalArgumentException("Invalid last name");
+                throw new IllegalArgumentException("Invalid last name.");
             }
             if (!ValidationClass.EMAIL_PATTERN.matcher(employee.getEmail()).matches()) {
-                throw new IllegalArgumentException("Invalid email format");
+                throw new IllegalArgumentException("Invalid email format.");
             }
             if (!ValidationClass.PHONE_PATTERN.matcher(employee.getPhone()).matches()) {
-                throw new IllegalArgumentException("Invalid phone number");
+                throw new IllegalArgumentException("Invalid phone number.");
             }
             if (!ValidationClass.NAME_PATTERN.matcher(employee.getDepartment()).matches()) {
-                throw new IllegalArgumentException("Invalid phone number");
+                throw new IllegalArgumentException("Invalid!,First character must be capital.");
             }
     }
 
