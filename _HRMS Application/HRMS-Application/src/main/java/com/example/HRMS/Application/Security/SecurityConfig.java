@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/Employee/login",
-                                "/Employee/register",
+                                "/Employee/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
@@ -57,7 +57,8 @@ public class SecurityConfig {
                                 "/api/holidays",
                                 "/api/calendar-days/**",
                                 "/Employee/update-password",
-                                "/Employee/update-profile-picture"
+                                "/Employee/update-profile-picture",
+                                "/api/tasks/**"
 
                         ).permitAll()
 
@@ -68,7 +69,7 @@ public class SecurityConfig {
                         .requestMatchers("/Employee/manager/**").hasRole("MANAGER")
                         .requestMatchers("/Employee/hr/**").hasRole("HR")
                         .requestMatchers("/Employee/seniorhr/**").hasRole("SENIOR_HR")
-                        .requestMatchers("/api/employees/**").hasAnyRole("HR", "SENIOR_HR", "MANAGER")
+                        .requestMatchers("/api/employees/**").hasAnyRole("HR", "SENIOR_HR", "MANAGER","USER")
                         //Payroll
                         .requestMatchers("/api/salary/upload").hasAnyRole("HR", "SENIOR_HR")
                         .requestMatchers("/api/salary/all").hasAnyRole("HR", "SENIOR_HR")
