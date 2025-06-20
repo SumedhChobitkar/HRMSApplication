@@ -15,6 +15,7 @@ public interface UserService {
     void updatePassword(Long userId, String newPassword);
     void updateProfilePicture(Long userId, MultipartFile profilePicture) throws IOException;
     Optional<byte[]> getProfilePictureByIdOrEmail(Long userId, String email);
+    Optional<User> findById(Long id);
 
 
 
