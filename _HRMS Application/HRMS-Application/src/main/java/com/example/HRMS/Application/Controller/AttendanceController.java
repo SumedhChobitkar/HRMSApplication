@@ -72,7 +72,6 @@ public class AttendanceController {
     }
 
     @GetMapping("/getByEmployeeId/{employeeId}")
-    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER','USER)")
     public ResponseEntity<List<Attendance>> getAttendanceByEmployeeId(@PathVariable Long employeeId) {
         return attendanceService.getAttendanceByEmployeeId(employeeId);
     }
