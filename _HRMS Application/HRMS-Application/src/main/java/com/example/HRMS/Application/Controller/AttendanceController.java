@@ -71,6 +71,12 @@ public class AttendanceController {
         return attendanceService.getAttendanceById(id);
     }
 
+    @GetMapping("/getByEmployeeId/{employeeId}")
+    @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR', 'MANAGER','USER)")
+    public ResponseEntity<List<Attendance>> getAttendanceByEmployeeId(@PathVariable Long employeeId) {
+        return attendanceService.getAttendanceByEmployeeId(employeeId);
+    }
+
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAnyRole('HR', 'SENIOR_HR')")
     public ResponseEntity<?> updateAttendance(
