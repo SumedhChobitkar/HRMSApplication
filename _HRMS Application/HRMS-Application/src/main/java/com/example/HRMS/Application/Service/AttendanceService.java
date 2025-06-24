@@ -19,5 +19,6 @@ public interface AttendanceService {
         public ResponseEntity<Attendance> getAttendanceById(Long id);
         public ResponseEntity<?> updateAttendance(Long id, Attendance updatedAttendance);
         public ResponseEntity<String> deleteAttendanceById(Long id);
+    ResponseEntity<List<Attendance>> getAttendanceByEmployeeId(Long employeeId);
 
     }

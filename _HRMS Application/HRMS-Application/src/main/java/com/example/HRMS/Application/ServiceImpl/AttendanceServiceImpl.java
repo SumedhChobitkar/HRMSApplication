@@ -109,7 +109,7 @@ public Attendance markAttendance(CheckTimeDto checkInDto) {
     LocalDate today = LocalDate.now(zone);
     LocalTime now = LocalTime.now(zone);
 
-    // ✅ Auto sign-out for previous unclosed attendance
+
     Optional<Attendance> yesterdayPending = attendanceRepository.findByEmployeeIdAndDateAndClockOutIsNull(employee.getId(), today.minusDays(1));
     if (yesterdayPending.isPresent()) {
         Attendance pending = yesterdayPending.get();
@@ -127,7 +127,7 @@ public Attendance markAttendance(CheckTimeDto checkInDto) {
         logger.info("Auto signed out yesterday's attendance for employeeId: {}", employee.getId());
     }
 
-    // ✅ Prevent duplicate sign-in today
+
     Optional<Attendance> existing = attendanceRepository.findByEmployeeIdAndDate(employee.getId(), today);
     if (existing.isPresent()) {
         throw new RuntimeException("Attendance already marked for today");
@@ -191,6 +191,25 @@ public Attendance markAttendance(CheckTimeDto checkInDto) {
             logger.warn("Service: Attendance not found for ID: {}", id);
             return ResponseEntity.status(404).body(null);
         }
+    }
+
+    @Override
+    public ResponseEntity<List<Attendance>> getAttendanceByEmployeeId(Long employeeId) {
+        logger.info("Fetching attendance records for employee ID: {}", employeeId);
+
+        if (!employeeRepository.existsById(employeeId)) {
+            logger.warn("Employee with ID {} not found", employeeId);
+            return ResponseEntity.status(404).body(null);
+        }
+
+        List<Attendance> attendanceList = attendanceRepository.findByEmployeeId(employeeId);
+
+        if (attendanceList.isEmpty()) {
+            logger.info("No attendance records found for employee ID: {}", employeeId);
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(attendanceList);
     }
 
 
