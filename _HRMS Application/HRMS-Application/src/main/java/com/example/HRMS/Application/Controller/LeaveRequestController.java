@@ -123,6 +123,22 @@ public class LeaveRequestController {
                 });
     }
 
+    @GetMapping("/leaveStatuses/{employeeId}")
+    public ResponseEntity<?> getLeaveStatusesByEmployeeId(@PathVariable Long employeeId) {
+        logger.info("Fetching leave statuses for employeeId: {}", employeeId);
+        try {
+            List<Map<String, Object>> statuses = service.getLeaveStatusesWithDatesByEmployeeId(employeeId);
+            if (statuses.isEmpty()) {
+                return ResponseEntity.ok("No leave statuses found for the given employee.");
+            }
+            return ResponseEntity.ok(statuses);
+        } catch (Exception e) {
+            logger.error("Error fetching leave statuses: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to fetch leave statuses.");
+        }
+    }
+
     @PutMapping("/updateStatusById/{id}/status")
     public ResponseEntity<LeaveRequest> updateStatus(@PathVariable("id") Long id, @RequestParam LeaveStatus status) {
         logger.info("Updating status of leave request ID {} to {}", id, status);
