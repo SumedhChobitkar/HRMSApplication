@@ -111,21 +111,41 @@ public class UserController {
     }
 
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> creds) {
+//    @PostMapping("/login")
+//    public ResponseEntity<?> login(@RequestBody Map<String, String> creds) {
+//        Optional<User> user = userService.login(creds.get("email"), creds.get("password"));
+//        if (user.isEmpty()) {
+//            return ResponseEntity.status(401).body("Invalid Credentials");
+//        }
+//
+//        Employee employee = new Employee();
+//        User loggedInUser = user.get();
+//        String token = jwtUtil.generateToken(loggedInUser.getEmail(), loggedInUser.getRole().name());
+//
+//        String fullName = (loggedInUser.getFirstName() != null ? loggedInUser.getFirstName() : "") +
+//                " " +
+//                (loggedInUser.getLastName() != null ? loggedInUser.getLastName() : "");
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("id", loggedInUser.getId());
+//        response.put("EmployeeId", loggedInUser.getEmployee().getId());
+//        response.put("name", fullName.trim());
+//        response.put("email", loggedInUser.getEmail());
+//        response.put("token", token);
+//        return ResponseEntity.ok(response);
+//    }
+@PostMapping("/login")
+public ResponseEntity<?> login(@RequestBody Map<String, String> creds) {
         Optional<User> user = userService.login(creds.get("email"), creds.get("password"));
         if (user.isEmpty()) {
-            return ResponseEntity.status(401).body("Invalid Credentials");
-        }
-
-        Employee employee = new Employee();
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Invalid Credentials");
+            return ResponseEntity.status(401).body(errorResponse);
+        }    Employee employee = new Employee();
         User loggedInUser = user.get();
         String token = jwtUtil.generateToken(loggedInUser.getEmail(), loggedInUser.getRole().name());
-
         String fullName = (loggedInUser.getFirstName() != null ? loggedInUser.getFirstName() : "") +
-                " " +
-                (loggedInUser.getLastName() != null ? loggedInUser.getLastName() : "");
-
+                " " +            (loggedInUser.getLastName() != null ? loggedInUser.getLastName() : "");
         Map<String, Object> response = new HashMap<>();
         response.put("id", loggedInUser.getId());
         response.put("EmployeeId", loggedInUser.getEmployee().getId());
@@ -134,7 +154,6 @@ public class UserController {
         response.put("token", token);
         return ResponseEntity.ok(response);
     }
-
 
     @PutMapping("/update-password")
     public ResponseEntity<?> updatePassword(@RequestParam Long userId,
@@ -181,6 +200,7 @@ public class UserController {
         .contentType(MediaType.IMAGE_JPEG)
         .body(imageOptional.get());
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         Optional<User> userOptional = userService.findById(id);

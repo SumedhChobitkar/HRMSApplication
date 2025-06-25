@@ -85,6 +85,26 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     }
 
     @Override
+    public List<Map<String, Object>> getLeaveStatusesWithDatesByEmployeeId(Long employeeId) {
+        List<LeaveRequest> leaveRequests = repository.findByEmployeeId(employeeId);
+
+        List<Map<String, Object>> responseList = new ArrayList<>();
+
+        for (LeaveRequest leave : leaveRequests) {
+            Map<String, Object> data = new LinkedHashMap<>();
+            data.put("fromDate", leave.getFromDate());
+            data.put("toDate", leave.getToDate());
+            data.put("status", leave.getStatus());
+            data.put("EmployeeId",leave.getEmployeeId());
+            responseList.add(data);
+        }
+
+        return responseList;
+    }
+
+
+
+    @Override
     public LeaveRequest updateStatus(Long id, LeaveStatus status) {
         LeaveRequest request = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Leave request not found with ID: " + id));

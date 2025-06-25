@@ -19,4 +19,8 @@ public interface LeaveRequestService {
     public List<String> getAllEmployeeEmails();
     public Map<String, Object> getLeaveBalance(Long employeeId);
 
+    List<Map<String, Object>> getLeaveStatusesWithDatesByEmployeeId(Long employeeId);
+
+
+
 }
