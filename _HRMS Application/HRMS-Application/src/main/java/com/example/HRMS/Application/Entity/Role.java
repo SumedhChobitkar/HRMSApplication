@@ -4,5 +4,6 @@ public enum Role {
     USER,
     HR,
     SENIOR_HR,
-    MANAGER
+    MANAGER,
+    SUPERADMIN
 }

@@ -2,6 +2,7 @@ package com.example.HRMS.Application.ServiceImpl;
 
 import com.example.HRMS.Application.Entity.Employee;
 import com.example.HRMS.Application.Entity.Task;
+import com.example.HRMS.Application.Entity.TaskStatus;
 import com.example.HRMS.Application.Repository.EmployeeRepository;
 import com.example.HRMS.Application.Repository.TaskRepository;
 import com.example.HRMS.Application.Service.TaskService;
@@ -52,6 +53,9 @@ public class TaskServiceImpl implements TaskService {
                 attachment.transferTo(file);
                 task.setAttachment(uploadPath);
             }
+            if (task.getStatus() == null) {
+                task.setStatus(TaskStatus.PENDING);
+            }
 
             task.setEmployee(employee);
             return taskRepository.save(task);
@@ -85,10 +89,82 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public Task updateTaskByEmployeeId(Long employeeId, Task task) {
+        try {
+            List<Task> tasks = taskRepository.findByEmployeeId(employeeId);
+            if (tasks.isEmpty()) {
+                throw new RuntimeException("No task found for employee ID: " + employeeId);
+            }
+
+            Task existing = tasks.get(0); // Assuming one task per employee. If multiple, adjust logic accordingly.
+
+            existing.setTaskName(task.getTaskName());
+            existing.setAssignee(task.getAssignee());
+            existing.setCheckList(task.getCheckList());
+            existing.setPriority(task.getPriority());
+            existing.setDueDate(task.getDueDate());
+            existing.setTags(task.getTags());
+            existing.setFollowers(task.getFollowers());
+            existing.setDescription(task.getDescription());
+            existing.setStatus(task.getStatus()); // if status is part of task now
+
+            Task updated = taskRepository.save(existing);
+            logger.info("Task updated for employee ID {}: Task ID {}", employeeId, updated.getId());
+            return updated;
+
+        } catch (Exception e) {
+            logger.error("Failed to update task for employee ID {}: {}", employeeId, e.getMessage());
+            throw new RuntimeException("Update failed");
+        }
+    }
+
+    @Override
+    public Task updateTaskStatus(Long taskId, TaskStatus status) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found with ID: " + taskId));
+        task.setStatus(status);
+        return taskRepository.save(task);
+    }
+
+    @Override
+    public void updateTaskStatusByEmployeeId(Long employeeId, TaskStatus status) {
+        List<Task> tasks = taskRepository.findByEmployeeId(employeeId);
+        if (tasks.isEmpty()) {
+            throw new RuntimeException("No tasks found for employee with ID: " + employeeId);
+        }
+
+        for (Task task : tasks) {
+            task.setStatus(status);
+        }
+
+        taskRepository.saveAll(tasks);
+    }
+
+
+    @Override
     public Task getTaskById(Long id) {
         return taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
     }
+    @Override
+    public List<Task> getTaskByEmpId(Long employeeId) {
+
+        return  taskRepository.findByEmployeeId(employeeId);
+
+
+    }
+    @Override
+    public List<String> getTaskStatusByEmployeeId(Long employeeId) {
+        List<Task> tasks = taskRepository.findByEmployeeId(employeeId);
+        if (tasks.isEmpty()) {
+            throw new RuntimeException("No tasks found for employee ID: " + employeeId);
+        }
+
+        return tasks.stream()
+                .map(task -> "Task ID: " + task.getId() + " - Status: " + task.getStatus())
+                .toList();
+    }
+
 
     @Override
     public List<Task> getAllTasks() {

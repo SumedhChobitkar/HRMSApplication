@@ -27,9 +27,10 @@ public class UserServiceImmpl implements UserService {
     public User register(User user) {
 
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+
             throw new RuntimeException("Email already registered");
         }
-
+        user.setIsregistered("TRUE");
         return userRepository.save(user);
     }
 
