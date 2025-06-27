@@ -38,6 +38,8 @@ public class User {
     @Lob
     private byte[] profilePicture;
 
+    private String isregistered;
+
 
 }
 

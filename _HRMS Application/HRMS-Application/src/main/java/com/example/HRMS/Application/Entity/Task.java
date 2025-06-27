@@ -1,5 +1,6 @@
 package com.example.HRMS.Application.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,15 +38,20 @@ public class Task {
     private String description;
 
     private String attachment;
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status = TaskStatus.PENDING;
 
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id", nullable = false)
+    @JsonIgnore
+    private Employee employee;
 
     // @ManyToOne(fetch = FetchType.LAZY)
     // @JoinColumn(name = "employee_id", nullable = false)
     // private Employee employee;
 
-@ManyToOne(fetch = FetchType.LAZY)
-@JoinColumn(name = "employee_id", nullable = false)
-@JsonIgnore
-private Employee employee;
+
 
 }

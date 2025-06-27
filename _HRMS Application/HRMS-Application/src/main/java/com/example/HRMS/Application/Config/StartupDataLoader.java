@@ -22,20 +22,20 @@ public class StartupDataLoader {
         PasswordEncoder passwordEncoder
     ) {
         return args -> {
-            String email = "manager@gmail.com";
+            String email = "superadmin@gmail.com";
 
             if (userRepository.findByEmail(email).isPresent()) {
-                System.out.println("Manager user already exists.");
+                System.out.println("superAdmin  already exists.");
                 return;
             }
 
             Employee manager = new Employee();
-            manager.setFirstName("Sumedh");
-            manager.setLastName("Manager");
+            manager.setFirstName("Super");
+            manager.setLastName("Admin");
             manager.setEmail(email);
-            manager.setPhone("9999999999");
+            manager.setPhone("1234567890");
             manager.setDepartment("Admin");
-            manager.setJobTitle("Manager");
+            manager.setJobTitle("Super Admin");
             manager.setRole(Role.MANAGER);
             manager.setJoiningDate(LocalDate.now());
             manager.setStatus("Active");
@@ -44,13 +44,14 @@ public class StartupDataLoader {
 
             User user = new User();
             user.setEmail(email);
-            user.setPassword(passwordEncoder.encode("Manager@123")); // password
+            user.setPassword(passwordEncoder.encode("Admin@123")); // password
             user.setRole(Role.MANAGER);
             user.setEmployee(savedManager);
+            user.setIsregistered("TRUE");
 
             userRepository.save(user);
 
-            System.out.println("Default MANAGER user created: " + email + " / password: Manager@123");
+            System.out.println("Default Super admin created: " + email + " / password: Admin@123");
         };
     }
 }
