@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Data
@@ -41,8 +42,16 @@ public class Task {
     private TaskStatus status = TaskStatus.PENDING;
 
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     @JsonIgnore
     private Employee employee;
+
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "employee_id", nullable = false)
+    // private Employee employee;
+
+
+
 }
