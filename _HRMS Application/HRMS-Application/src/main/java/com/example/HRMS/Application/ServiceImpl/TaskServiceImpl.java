@@ -30,6 +30,41 @@ public class TaskServiceImpl implements TaskService {
         this.taskRepository = taskRepository;
     }
 
+//    @Override
+//    public Task createTask(Task task, MultipartFile attachment, Long employeeId) {
+//        try {
+//            if (employeeId == null) {
+//                throw new IllegalArgumentException("Employee ID is required.");
+//            }
+//
+//            Employee employee = employeeRepository.findById(employeeId)
+//                    .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + employeeId));
+//
+//            if (attachment != null && !attachment.isEmpty()) {
+//                String fileName = UUID.randomUUID() + "_" + attachment.getOriginalFilename();
+//                String uploadDir = System.getProperty("user.dir") + File.separator + "uploads";
+//                File directory = new File(uploadDir);
+//                if (!directory.exists()) {
+//                    directory.mkdirs();
+//                }
+//
+//                String uploadPath = uploadDir + File.separator + fileName;
+//                File file = new File(uploadPath);
+//                attachment.transferTo(file);
+//                task.setAttachment(uploadPath);
+//            }
+//            if (task.getStatus() == null) {
+//                task.setStatus(TaskStatus.PENDING);
+//            }
+//
+//            task.setEmployee(employee);
+//            return taskRepository.save(task);
+//
+//        } catch (Exception e) {
+//            throw new RuntimeException("Error creating task: " + e.getMessage());
+//        }
+//    }
+
     @Override
     public Task createTask(Task task, MultipartFile attachment, Long employeeId) {
         try {
@@ -40,19 +75,12 @@ public class TaskServiceImpl implements TaskService {
             Employee employee = employeeRepository.findById(employeeId)
                     .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + employeeId));
 
+            // ✅ Store file as bytes instead of saving path
             if (attachment != null && !attachment.isEmpty()) {
-                String fileName = UUID.randomUUID() + "_" + attachment.getOriginalFilename();
-                String uploadDir = System.getProperty("user.dir") + File.separator + "uploads";
-                File directory = new File(uploadDir);
-                if (!directory.exists()) {
-                    directory.mkdirs();
-                }
-
-                String uploadPath = uploadDir + File.separator + fileName;
-                File file = new File(uploadPath);
-                attachment.transferTo(file);
-                task.setAttachment(uploadPath);
+                task.setAttachment(attachment.getBytes());
             }
+
+            // Set default status if not provided
             if (task.getStatus() == null) {
                 task.setStatus(TaskStatus.PENDING);
             }
@@ -64,6 +92,7 @@ public class TaskServiceImpl implements TaskService {
             throw new RuntimeException("Error creating task: " + e.getMessage());
         }
     }
+
     @Override
     public Task updateTask(Long id, Task task) {
         try {
