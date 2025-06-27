@@ -37,7 +37,11 @@ public class Task {
 
     private String description;
 
-    private String attachment;
+
+    @Lob
+    @Column(name = "attachment", columnDefinition = "LONGBLOB")
+    private byte[] attachment; // Store actual file data
+
     @Enumerated(EnumType.STRING)
     private TaskStatus status = TaskStatus.PENDING;
 

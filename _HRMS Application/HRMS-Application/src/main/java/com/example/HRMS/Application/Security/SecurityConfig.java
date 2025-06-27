@@ -47,6 +47,7 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/api/leaves/**",
                                 "/api/attendance/**",
+                                "/api/helpdesk/**",
 //                                "/api/attendance/signIn",
 //                                "/api/attendance/signOut",
 //                                "/api/attendance/getAttendanceByid/{id}",

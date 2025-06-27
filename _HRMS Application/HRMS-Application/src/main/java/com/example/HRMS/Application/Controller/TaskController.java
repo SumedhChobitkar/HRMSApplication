@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api/tasks")
 public class TaskController {
 
@@ -109,6 +110,22 @@ public class TaskController {
         } catch (Exception e) {
             return ResponseEntity.status(404).body("Error: " + e.getMessage());
         }
+    }
+
+
+    @GetMapping("/{id}/attachment")
+    public ResponseEntity<byte[]> downloadAttachment(@PathVariable Long id) {
+        Task task = taskService.getTaskById(id);
+
+        if (task.getAttachment() == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDisposition(ContentDisposition.attachment().filename("task_attachment").build());
+
+        return new ResponseEntity<>(task.getAttachment(), headers, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
