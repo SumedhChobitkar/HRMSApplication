@@ -20,6 +20,8 @@ public interface TaskService {
 
     Task updateTaskByEmployeeId(Long employeeId, Task task);
     List<String> getTaskStatusByEmployeeId(Long employeeId);
+    List<Task> getTasksByEmployeeName(String firstName, String lastName);
+
 
 
 }

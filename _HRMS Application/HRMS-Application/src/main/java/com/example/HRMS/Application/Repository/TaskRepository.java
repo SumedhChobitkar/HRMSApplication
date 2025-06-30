@@ -9,4 +9,5 @@ import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByEmployeeId(Long employeeId);
+    List<Task> findByEmployee_FirstNameAndEmployee_LastName(String firstName, String lastName);
 }

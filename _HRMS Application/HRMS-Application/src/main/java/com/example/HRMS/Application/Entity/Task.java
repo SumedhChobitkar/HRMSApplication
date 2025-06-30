@@ -45,6 +45,8 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private TaskStatus status = TaskStatus.PENDING;
 
+    private String employeeFirstName;
+    private String employeeLastName;
 
 
     @ManyToOne(fetch = FetchType.LAZY)

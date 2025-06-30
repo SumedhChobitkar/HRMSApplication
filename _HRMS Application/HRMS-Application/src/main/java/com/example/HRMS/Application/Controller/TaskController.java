@@ -23,29 +23,6 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
-//    @PostMapping
-//    public ResponseEntity<?> createTask(
-//            @RequestParam("task") String taskJson,
-//            @RequestParam(value = "attachment", required = false) MultipartFile attachment,
-//            @RequestParam("employeeId") Long employeeId) {
-//
-//        try {
-//            // Parse JSON manually
-//
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            objectMapper.registerModule(new JavaTimeModule());
-//
-//            Task task = objectMapper.readValue(taskJson, Task.class);
-//
-//            Task saved = taskService.createTask(task, attachment, employeeId);
-//            return ResponseEntity.ok("Task created with ID: " + saved.getId());
-//        } catch (IllegalArgumentException e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).body("Error: " + e.getMessage());
-//        }
-//    }
-
     @PostMapping
     public ResponseEntity<?> createTask(
             @RequestParam("task") String taskJson,
@@ -97,6 +74,18 @@ public class TaskController {
             return ResponseEntity.status(404).body("Task not found");
         }
     }
+    @GetMapping("/employee/name")
+    public ResponseEntity<?> getTasksByEmployeeName(
+            @RequestParam String firstName,
+            @RequestParam String lastName) {
+        try {
+            List<Task> tasks = taskService.getTasksByEmployeeName(firstName, lastName);
+            return ResponseEntity.ok(tasks);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body("Error: " + e.getMessage());
+        }
+    }
+
 
     @GetMapping
     public ResponseEntity<List<Task>> getAllTasks() {
