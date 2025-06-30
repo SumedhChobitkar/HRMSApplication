@@ -30,40 +30,6 @@ public class TaskServiceImpl implements TaskService {
         this.taskRepository = taskRepository;
     }
 
-//    @Override
-//    public Task createTask(Task task, MultipartFile attachment, Long employeeId) {
-//        try {
-//            if (employeeId == null) {
-//                throw new IllegalArgumentException("Employee ID is required.");
-//            }
-//
-//            Employee employee = employeeRepository.findById(employeeId)
-//                    .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + employeeId));
-//
-//            if (attachment != null && !attachment.isEmpty()) {
-//                String fileName = UUID.randomUUID() + "_" + attachment.getOriginalFilename();
-//                String uploadDir = System.getProperty("user.dir") + File.separator + "uploads";
-//                File directory = new File(uploadDir);
-//                if (!directory.exists()) {
-//                    directory.mkdirs();
-//                }
-//
-//                String uploadPath = uploadDir + File.separator + fileName;
-//                File file = new File(uploadPath);
-//                attachment.transferTo(file);
-//                task.setAttachment(uploadPath);
-//            }
-//            if (task.getStatus() == null) {
-//                task.setStatus(TaskStatus.PENDING);
-//            }
-//
-//            task.setEmployee(employee);
-//            return taskRepository.save(task);
-//
-//        } catch (Exception e) {
-//            throw new RuntimeException("Error creating task: " + e.getMessage());
-//        }
-//    }
 
     @Override
     public Task createTask(Task task, MultipartFile attachment, Long employeeId) {
@@ -75,7 +41,7 @@ public class TaskServiceImpl implements TaskService {
             Employee employee = employeeRepository.findById(employeeId)
                     .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + employeeId));
 
-            // ✅ Store file as bytes instead of saving path
+            //  Store file as bytes instead of saving path
             if (attachment != null && !attachment.isEmpty()) {
                 task.setAttachment(attachment.getBytes());
             }
@@ -85,7 +51,11 @@ public class TaskServiceImpl implements TaskService {
                 task.setStatus(TaskStatus.PENDING);
             }
 
+
             task.setEmployee(employee);
+            task.setEmployeeFirstName(employee.getFirstName());
+            task.setEmployeeLastName(employee.getLastName());
+
             return taskRepository.save(task);
 
         } catch (Exception e) {
@@ -192,6 +162,14 @@ public class TaskServiceImpl implements TaskService {
         return tasks.stream()
                 .map(task -> "Task ID: " + task.getId() + " - Status: " + task.getStatus())
                 .toList();
+    }
+    @Override
+    public List<Task> getTasksByEmployeeName(String firstName, String lastName) {
+        List<Task> tasks = taskRepository.findByEmployee_FirstNameAndEmployee_LastName(firstName, lastName);
+        if (tasks.isEmpty()) {
+            throw new RuntimeException("No tasks found for employee: " + firstName + " " + lastName);
+        }
+        return tasks;
     }
 
 
