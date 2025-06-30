@@ -149,6 +149,17 @@ public class TaskController {
         }
     }
 
+//    @PutMapping("/{id}/status")
+//    public ResponseEntity<?> updateTaskStatus(
+//            @PathVariable Long id,
+//            @RequestParam("status") TaskStatus status) {
+//        try {
+//            Task updated = taskService.updateTaskStatus(id, status);
+//            return ResponseEntity.ok("Task status updated to: " + updated.getStatus());
+//        } catch (Exception e) {
+//            return ResponseEntity.status(500).body("Error updating status: " + e.getMessage());
+//        }
+//    }
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateTaskStatus(
             @PathVariable Long id,
@@ -160,7 +171,6 @@ public class TaskController {
             return ResponseEntity.status(500).body("Error updating status: " + e.getMessage());
         }
     }
-
     @PutMapping("/employee/{employeeId}/status")
     public ResponseEntity<?> updateTaskStatusByEmployeeId(
             @PathVariable Long employeeId,
