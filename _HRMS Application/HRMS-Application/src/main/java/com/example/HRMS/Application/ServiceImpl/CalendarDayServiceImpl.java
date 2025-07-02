@@ -93,6 +93,7 @@ public class CalendarDayServiceImpl implements CalendarDayService {
             dayStatus.put("date", date);
             dayStatus.put("employeeId", employeeId);
             dayStatus.put("status", status);
+            dayStatus.put("shift", "GEN");
 
             result.add(dayStatus);
         }
