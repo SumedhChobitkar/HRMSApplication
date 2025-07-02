@@ -22,4 +22,6 @@ public class CalendarDay {
     private Boolean isWorkingDay;
 
     private String remarks;
+
+
 }
