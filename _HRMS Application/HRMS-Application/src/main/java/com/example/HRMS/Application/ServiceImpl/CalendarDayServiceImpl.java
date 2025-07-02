@@ -52,6 +52,7 @@ public class CalendarDayServiceImpl implements CalendarDayService {
     public List<Map<String, Object>> getEmployeeCalendar(Long employeeId, int year, int month) {
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+        LocalDate today = LocalDate.now();
 
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
@@ -72,15 +73,20 @@ public class CalendarDayServiceImpl implements CalendarDayService {
             }
 
             String status;
-
-            if (isHoliday(holidays, date)) {
-                status = "Holiday";
-            } else if (isOnLeave(leaves, date)) {
-                status = "Absent (on Leave)";
+            if (date.isAfter(today)) {
+                status = "";
+            } else
+             if (isHoliday(holidays, date)) {
+                status = "H";
+            } else
+             if (isWeekend(date)) {
+                 status = "O";
+             } else if (isOnLeave(leaves, date)) {
+                status = "A";
             } else if (isPresent(attendances, date)) {
-                status = "Present";
+                status = "P";
             } else {
-                status = "Absent";
+                status = "A";
             }
 
             Map<String, Object> dayStatus = new HashMap<>();
@@ -106,6 +112,8 @@ public class CalendarDayServiceImpl implements CalendarDayService {
     private boolean isHoliday(List<Holiday> holidays, LocalDate date) {
         return holidays.stream().anyMatch(h -> h.getDate().equals(date));
     }
-
+    private boolean isWeekend(LocalDate date) {
+        return date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY;
+    }
 
 }

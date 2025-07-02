@@ -14,8 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/calendar-days")
 @CrossOrigin("*")
+@RequestMapping("/api/calendar-days")
+
 @Tag(name = "Employee Calendar", description = "View employee calendar attendance status")
 public class CalendarDayController {
 
