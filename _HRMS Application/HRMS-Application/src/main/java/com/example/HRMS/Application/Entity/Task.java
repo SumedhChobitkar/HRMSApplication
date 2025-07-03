@@ -7,6 +7,7 @@ import lombok.*;
 import java.time.LocalDate;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Data
@@ -38,6 +39,13 @@ public class Task {
     private String description;
 
 
+    @Column(updatable = false)
+    private LocalDate taskAssignDate;
+
+
+
+
+
     @Lob
     @Column(name = "attachment", columnDefinition = "LONGBLOB")
     private byte[] attachment; // Store actual file data
@@ -53,6 +61,7 @@ public class Task {
     @JoinColumn(name = "employee_id", nullable = false)
     @JsonIgnore
     private Employee employee;
+
 
     // @ManyToOne(fetch = FetchType.LAZY)
     // @JoinColumn(name = "employee_id", nullable = false)
