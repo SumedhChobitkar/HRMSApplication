@@ -1,9 +1,11 @@
 package com.example.HRMS.Application.Service;
 
+import com.example.HRMS.Application.Entity.Role;
 import com.example.HRMS.Application.Entity.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
@@ -16,6 +18,8 @@ public interface UserService {
     void updateProfilePicture(Long userId, MultipartFile profilePicture) throws IOException;
     Optional<byte[]> getProfilePictureByIdOrEmail(Long userId, String email);
     Optional<User> findById(Long id);
+   // public List<User> getCcSuggestions(String query, List<Role> roles) ;
+
 
 
 
