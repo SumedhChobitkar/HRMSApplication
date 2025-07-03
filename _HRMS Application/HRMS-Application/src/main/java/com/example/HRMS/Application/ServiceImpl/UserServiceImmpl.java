@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -30,7 +31,10 @@ public class UserServiceImmpl implements UserService {
 
             throw new RuntimeException("Email already registered");
         }
+
         user.setIsregistered("TRUE");
+
+
         return userRepository.save(user);
     }
 
@@ -99,8 +103,18 @@ public void updatePassword(Long userId, String newPassword) {
 
     @Override
     public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
+        return  userRepository.findById(id);
     }
+
+//    @Override
+//    public Optional<User> findById(Long id) {
+//        return userRepository.findById(id);
+//    }
+//
+//    public List<User> getCcSuggestions(String query, List<Role> roles) {
+//        return userRepository.findByEmailContainingIgnoreCaseAndRoleIn(query, roles);
+//    }
+
 
 
     private boolean isValidImageType(String contentType) {

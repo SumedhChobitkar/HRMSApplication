@@ -70,6 +70,10 @@ public class UserController {
                 return ResponseEntity.badRequest().body("Employee profile not found");
             }
 
+
+            if (!employeeOpt.get().getEmail().equalsIgnoreCase(user.getEmail())) {
+                return ResponseEntity.badRequest().body("Email does not match with Employee record");
+            }
             if (!employeeOpt.get().getRole().equals(user.getRole())) {
                 return ResponseEntity.badRequest().body("Role mismatch between User and Employee");
             }
@@ -110,30 +114,6 @@ public class UserController {
         );
     }
 
-
-//    @PostMapping("/login")
-//    public ResponseEntity<?> login(@RequestBody Map<String, String> creds) {
-//        Optional<User> user = userService.login(creds.get("email"), creds.get("password"));
-//        if (user.isEmpty()) {
-//            return ResponseEntity.status(401).body("Invalid Credentials");
-//        }
-//
-//        Employee employee = new Employee();
-//        User loggedInUser = user.get();
-//        String token = jwtUtil.generateToken(loggedInUser.getEmail(), loggedInUser.getRole().name());
-//
-//        String fullName = (loggedInUser.getFirstName() != null ? loggedInUser.getFirstName() : "") +
-//                " " +
-//                (loggedInUser.getLastName() != null ? loggedInUser.getLastName() : "");
-//
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("id", loggedInUser.getId());
-//        response.put("EmployeeId", loggedInUser.getEmployee().getId());
-//        response.put("name", fullName.trim());
-//        response.put("email", loggedInUser.getEmail());
-//        response.put("token", token);
-//        return ResponseEntity.ok(response);
-//    }
 @PostMapping("/login")
 public ResponseEntity<?> login(@RequestBody Map<String, String> creds) {
         Optional<User> user = userService.login(creds.get("email"), creds.get("password"));

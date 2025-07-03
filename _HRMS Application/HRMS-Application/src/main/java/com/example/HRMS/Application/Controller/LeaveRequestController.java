@@ -1,7 +1,8 @@
 package com.example.HRMS.Application.Controller;
-import com.example.HRMS.Application.Entity.LeaveRequest;
-import com.example.HRMS.Application.Entity.LeaveStatus;
+import com.example.HRMS.Application.Entity.*;
+import com.example.HRMS.Application.Repository.EmployeeRepository;
 import com.example.HRMS.Application.Service.LeaveRequestService;
+import com.example.HRMS.Application.Service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 
@@ -24,6 +27,11 @@ public class LeaveRequestController {
 
     @Autowired
     private LeaveRequestService service;
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(LeaveRequestController.class);
 
@@ -90,6 +98,11 @@ public class LeaveRequestController {
           if (fromDate.isAfter(today.plusMonths(6))) {
               return ResponseEntity.badRequest().body("You can't apply for leave more than 6 months in advance.");
           }
+
+          Employee employee = employeeRepository.findById(request.getEmployeeId())
+                  .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + request.getEmployeeId()));
+
+          request.setEmployeeName(employee.getFirstName() + " " + employee.getLastName());
 
           LeaveRequest created = service.createLeaveRequest(request, file);
           return ResponseEntity.ok(created);
@@ -162,6 +175,22 @@ public class LeaveRequestController {
         }
         return ResponseEntity.ok(email);
     }
+
+//    @GetMapping("/cc-suggestions")
+//    public ResponseEntity<List<String>> getCcToSuggestions(@RequestParam String query) {
+//        List<Role> rolesToInclude = Arrays.asList(Role.HR, Role.SENIOR_HR, Role.MANAGER);
+//        List<User> matchedUsers = userService.getCcSuggestions(query, rolesToInclude);
+//
+//        List<String> suggestions = matchedUsers.stream()
+//                .map(user -> String.format("%s %s <%s>",
+//                        user.getFirstName() != null ? user.getFirstName() : "",
+//                        user.getLastName() != null ? user.getLastName() : "",
+//                        user.getEmail()))
+//                .collect(Collectors.toList());
+//
+//        return ResponseEntity.ok(suggestions);
+//    }
+
 
     // 2. Get list of all employee emails for ccTo
     @GetMapping("/ccToEmployees")

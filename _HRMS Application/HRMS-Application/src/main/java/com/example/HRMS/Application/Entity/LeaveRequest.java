@@ -1,6 +1,7 @@
 package com.example.HRMS.Application.Entity;
 
 import com.example.HRMS.Application.Config.StringListConverter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -45,6 +46,16 @@ private String ccTo;
 
     @Transient
     private List<String> ccToList;
+
+
+//
+    private String employeeName;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "employee_id", referencedColumnName = "id", insertable = false, updatable = false)
+//    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "user"})
+//    private Employee employee;
+
 
 }
 
