@@ -30,10 +30,8 @@ public class LeaveRequest {
     // @Convert(converter = StringListConverter.class)
     // @Column( columnDefinition = "TEXT")
     // private List<String> ccTo;
-
 //    private List<String> ccTo;
-private String ccTo;
-
+  private String ccTo;
     private String contactDetails;
     private String fileName;
     private String fileType;
@@ -46,9 +44,6 @@ private String ccTo;
 
     @Transient
     private List<String> ccToList;
-
-
-//
     private String employeeName;
 
 //    @ManyToOne(fetch = FetchType.LAZY)

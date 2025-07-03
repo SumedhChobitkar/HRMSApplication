@@ -98,6 +98,9 @@ public class LeaveRequestController {
           if (fromDate.isAfter(today.plusMonths(6))) {
               return ResponseEntity.badRequest().body("You can't apply for leave more than 6 months in advance.");
           }
+          if (toDate.isBefore(fromDate)) {
+              return ResponseEntity.badRequest().body("To date must be the same or after From date.");
+          }
 
           Employee employee = employeeRepository.findById(request.getEmployeeId())
                   .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + request.getEmployeeId()));
@@ -115,9 +118,6 @@ public class LeaveRequestController {
                   .body("Server error while creating leave request.");
       }
   }
-
-
-
     @GetMapping("/getAllLeaves")
     public ResponseEntity<List<LeaveRequest>> getAllLeaves() {
         logger.info("Fetching all leave requests");
