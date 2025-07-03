@@ -134,31 +134,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         return emailList;
     }
 
-  /*  @Override
-    public Map<String, Object> getLeaveBalance(Long employeeId) {
-        logger.info("Calculating leave balance for employeeId: {}", employeeId);
 
-        List<LeaveRequest> approvedLeaves = repository
-                .findByEmployeeIdAndStatus(employeeId, LeaveStatus.APPROVED);
-
-        Map<LeaveType, Long> leaveCountMap = new EnumMap<>(LeaveType.class);
-        long totalLeaveDays = 0;
-
-        for (LeaveRequest leave : approvedLeaves) {
-            LeaveType type = leave.getLeaveType();
-            long days = ChronoUnit.DAYS.between(leave.getFromDate(), leave.getToDate()) + 1;
-
-            leaveCountMap.put(type, leaveCountMap.getOrDefault(type, 0L) + days);
-            totalLeaveDays += days;
-        }
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("totalLeaveDays", totalLeaveDays);
-        response.put("leaveBreakdown", leaveCountMap);
-
-        logger.info("Leave balance calculated for employeeId: {} -> {}", employeeId, response);
-        return response;
-    }*/
   @Override
   public Map<String, Object> getLeaveBalance(Long employeeId) {
       logger.info("Calculating leave balance for employeeId: {}", employeeId);
@@ -216,6 +192,11 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
       logger.info("Leave balance response for employee {}: {}", employeeId, balanceMap);
       return balanceMap;
   }
+    @Override
+    public List<LeaveRequest> getLeaveByEmployeeName(String name) {
+        return repository.findByEmployeeNameContainingIgnoreCase(name);
+    }
+
     @Override
     public void deleteLeaveRequest(Long id) {
         logger.info("Attempting to delete leave request with ID: {}", id);

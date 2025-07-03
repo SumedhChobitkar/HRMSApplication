@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -39,44 +40,7 @@ public class LeaveRequestController {
         this.service = service;
     }
 
-  /*  @PostMapping(value = "/createLeave", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> createLeave(@RequestPart(value = "request") LeaveRequest request,
-                                         @RequestPart(value = "file", required = false) MultipartFile file) {
-        logger.info("Creating new leave request: {}", request);
-        logger.info("Creating new leave request for employeeId: {}", request.getEmployeeId());
 
-        if (request.getEmployeeId() == null) {
-            return ResponseEntity.badRequest().body("Employee ID is required.");
-        }
-
-        if (file != null) {
-            logger.info("File attached: {}", file.getOriginalFilename());
-        }
-
-        try {
-            // Validate leave dates: allow backdated leave up to 1 month ago
-            LocalDate fromDate = request.getFromDate();
-            LocalDate toDate = request.getToDate();
-            LocalDate today = LocalDate.now();
-
-            if (fromDate.isBefore(today.minusMonths(1))) {
-                return ResponseEntity.badRequest().body("You can only apply for leave going back 1 month.");
-            }
-
-            if (fromDate.isAfter(today.plusMonths(6))) {
-                return ResponseEntity.badRequest().body("You can't apply for leave more than 6 months in advance.");
-            }
-
-            // Save the leave request (with or without attachment)
-            LeaveRequest created = service.createLeaveRequest(request, file);
-            return ResponseEntity.ok(created);
-
-        } catch (Exception e) {
-            logger.error("Error creating leave request: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Server error while creating leave request.");
-        }
-    }*/
   @PostMapping(value = "/createLeave", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<?> createLeave(@RequestPart("request") LeaveRequest request,
                                        @RequestPart(value = "file", required = false) MultipartFile file) {
@@ -150,6 +114,19 @@ public class LeaveRequestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to fetch leave statuses.");
         }
+    }
+
+    @GetMapping("/byEmployeeName")
+    public ResponseEntity<?> getLeavesByEmployeeName(@RequestParam String name) {
+        logger.info("Fetching leave requests for employeeName containing: {}", name);
+        List<LeaveRequest> leaves = service.getLeaveByEmployeeName(name);
+
+        if (leaves.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No leave records found for employee name: " + name);
+        }
+
+        return ResponseEntity.ok(leaves);
     }
 
     @PutMapping("/updateStatusById/{id}/status")
@@ -259,6 +236,26 @@ public class LeaveRequestController {
             return ResponseEntity.status(404).body(error);
         }
     }
+//
+//    @GetMapping("/download/{leaveId}")
+//    public ResponseEntity<?> downloadFile(@RequestParam("file") String filaname) {
+//        Optional<LeaveRequest> leaveOpt = service.getLeaveByEmployeeName()
+//
+//        if (leaveOpt.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Leave request not found with ID: " + leaveId);
+//        }
+//
+//        LeaveRequest leave = leaveOpt.get();
+//
+//        if (leave.getData() == null || leave.getFileName() == null) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No document attached for this leave request.");
+//        }
+//
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+//                .header("Content-Disposition", "attachment; filename=\"" + leave.getFileName() + "\"")
+//                .body(leave.getData());
+//    }
 
 }
 

@@ -21,6 +21,7 @@ public interface LeaveRequestService {
 
     List<Map<String, Object>> getLeaveStatusesWithDatesByEmployeeId(Long employeeId);
 
+    List<LeaveRequest> getLeaveByEmployeeName(String name);
 
 
 }
