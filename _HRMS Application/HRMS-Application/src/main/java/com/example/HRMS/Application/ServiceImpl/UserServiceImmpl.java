@@ -2,6 +2,7 @@ package com.example.HRMS.Application.ServiceImpl;
 
 import com.example.HRMS.Application.CommonUtil.ValidationClass;
 
+import com.example.HRMS.Application.Entity.Role;
 import com.example.HRMS.Application.Entity.User;
 import com.example.HRMS.Application.Repository.UserRepository;
 import com.example.HRMS.Application.Service.UserService;
@@ -111,9 +112,9 @@ public void updatePassword(Long userId, String newPassword) {
 //        return userRepository.findById(id);
 //    }
 //
-//    public List<User> getCcSuggestions(String query, List<Role> roles) {
-//        return userRepository.findByEmailContainingIgnoreCaseAndRoleIn(query, roles);
-//    }
+    public List<User> getCcSuggestions(String query, List<Role> roles) {
+        return userRepository.findByEmailContainingIgnoreCaseAndRoleIn(query, roles);
+    }
 
 
 

@@ -153,20 +153,20 @@ public class LeaveRequestController {
         return ResponseEntity.ok(email);
     }
 
-//    @GetMapping("/cc-suggestions")
-//    public ResponseEntity<List<String>> getCcToSuggestions(@RequestParam String query) {
-//        List<Role> rolesToInclude = Arrays.asList(Role.HR, Role.SENIOR_HR, Role.MANAGER);
-//        List<User> matchedUsers = userService.getCcSuggestions(query, rolesToInclude);
-//
-//        List<String> suggestions = matchedUsers.stream()
-//                .map(user -> String.format("%s %s <%s>",
-//                        user.getFirstName() != null ? user.getFirstName() : "",
-//                        user.getLastName() != null ? user.getLastName() : "",
-//                        user.getEmail()))
-//                .collect(Collectors.toList());
-//
-//        return ResponseEntity.ok(suggestions);
-//    }
+    @GetMapping("/cc-suggestions")
+    public ResponseEntity<List<String>> getCcToSuggestions(@RequestParam String query) {
+        List<Role> rolesToInclude = Arrays.asList(Role.HR, Role.SENIOR_HR, Role.MANAGER);
+        List<User> matchedUsers = userService.getCcSuggestions(query, rolesToInclude);
+
+        List<String> suggestions = matchedUsers.stream()
+                .map(user -> String.format("%s %s <%s>",
+                        user.getFirstName() != null ? user.getFirstName() : "",
+                        user.getLastName() != null ? user.getLastName() : "",
+                        user.getEmail()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(suggestions);
+    }
 
 
     // 2. Get list of all employee emails for ccTo
@@ -182,26 +182,26 @@ public class LeaveRequestController {
 
         return ResponseEntity.ok(emails);
     }
-    /*@GetMapping("/leaveBalance/{employeeId}")
-    public ResponseEntity<?> getLeaveBalance(@PathVariable Long employeeId) {
-        logger.info("Fetching leave balance for employeeId: {}", employeeId);
-
-        try {
-            Map<String, Object> leaveBalance = service.getLeaveBalance(employeeId);
-
-            if (leaveBalance.isEmpty()) {
-                logger.warn("No approved leave records found for employeeId: {}", employeeId);
-                return ResponseEntity.ok("No leave data found for the employee.");
-            }
-
-            return ResponseEntity.ok(leaveBalance);
-
-        } catch (Exception e) {
-            logger.error("Error occurred while fetching leave balance for employeeId: {}", employeeId, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to fetch leave balance.");
-        }
-    }*/
+//    /*@GetMapping("/leaveBalance/{employeeId}")
+//    public ResponseEntity<?> getLeaveBalance(@PathVariable Long employeeId) {
+//        logger.info("Fetching leave balance for employeeId: {}", employeeId);
+//
+//        try {
+//            Map<String, Object> leaveBalance = service.getLeaveBalance(employeeId);
+//
+//            if (leaveBalance.isEmpty()) {
+//                logger.warn("No approved leave records found for employeeId: {}", employeeId);
+//                return ResponseEntity.ok("No leave data found for the employee.");
+//            }
+//
+//            return ResponseEntity.ok(leaveBalance);
+//
+//        } catch (Exception e) {
+//            logger.error("Error occurred while fetching leave balance for employeeId: {}", employeeId, e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("Failed to fetch leave balance.");
+//        }
+//    }*/
     @GetMapping("/leaveBalance/{employeeId}")
     public ResponseEntity<?> getLeaveBalance(@PathVariable Long employeeId) {
         logger.info("Fetching leave balance for employeeId: {}", employeeId);
@@ -236,26 +236,26 @@ public class LeaveRequestController {
             return ResponseEntity.status(404).body(error);
         }
     }
-//
-//    @GetMapping("/download/{leaveId}")
-//    public ResponseEntity<?> downloadFile(@RequestParam("file") String filaname) {
-//        Optional<LeaveRequest> leaveOpt = service.getLeaveByEmployeeName()
-//
-//        if (leaveOpt.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Leave request not found with ID: " + leaveId);
-//        }
-//
-//        LeaveRequest leave = leaveOpt.get();
-//
-//        if (leave.getData() == null || leave.getFileName() == null) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No document attached for this leave request.");
-//        }
-//
-//        return ResponseEntity.ok()
-//                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-//                .header("Content-Disposition", "attachment; filename=\"" + leave.getFileName() + "\"")
-//                .body(leave.getData());
-//    }
+
+    @GetMapping("/download/{leaveId}")
+    public ResponseEntity<?> downloadFile(@PathVariable Long leaveId ) {
+        Optional<LeaveRequest> leaveOpt = service.getLeaveRequestById(leaveId);
+
+        if (leaveOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Leave request not found with ID: " + leaveId);
+        }
+
+        LeaveRequest leave = leaveOpt.get();
+
+       if (leave.getData() == null || leave.getFileName() == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No document attached for this leave request.");
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header("Content-Disposition", "attachment; filename=\"" + leave.getFileName() + "\"")
+                .body(leave.getData());
+    }
 
 }
 
