@@ -1,6 +1,7 @@
 package com.example.HRMS.Application.Entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,4 +33,14 @@ public class HelpDesk {
 
     @Enumerated(EnumType.STRING)
     private Priority priority;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private HelpDeskStatus helpDeskStatus;
+
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false)
+    @JsonIgnoreProperties("employee") // to avoid circular reference
+    private Employee employee;
+
 }

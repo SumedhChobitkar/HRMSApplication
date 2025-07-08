@@ -2,7 +2,9 @@ package com.example.HRMS.Application.Controller;
 
 
 import com.example.HRMS.Application.Entity.HelpDesk;
+import com.example.HRMS.Application.Entity.HelpDeskStatus;
 import com.example.HRMS.Application.Service.HelpDeskService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -77,6 +79,56 @@ public class HelpDeskController {
 
         return new ResponseEntity<>(helpDesk.getAttachedFile(), headers, HttpStatus.OK);
     }
+
+    @GetMapping("/helpdesk/status/{status}")
+    public ResponseEntity<?> getHelpDeskByStatus(@PathVariable("status") HelpDeskStatus helpDeskStatus) {
+        try {
+            List<HelpDesk> helpDesks = helpDeskService.getHelpDeskByStatus(helpDeskStatus);
+            return ResponseEntity.ok(helpDesks);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving help desk by status: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/helpdesk/{id}/status")
+    public ResponseEntity<?> updateHelpDeskStatus(@PathVariable Long id, @RequestParam HelpDeskStatus helpDeskStatus) {
+        try {
+            HelpDesk updated = helpDeskService.updateHelpDeskStatus(id, helpDeskStatus);
+            return ResponseEntity.ok(updated);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("HelpDesk not found with id: " + id);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error updating status: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/helpdesk/update-status/by-employee-id/{empId}")
+    public ResponseEntity<?> updateStatusByEmpId(@PathVariable Long empId, @RequestParam HelpDeskStatus helpDeskStatus) {
+        try {
+            List<HelpDesk> updatedList = helpDeskService.updateStatusByEmployeeId(empId, helpDeskStatus);
+            return ResponseEntity.ok(updatedList);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/helpdesk/update-status/by-employee-name")
+    public ResponseEntity<?> updateStatusByEmpName(@RequestParam String firstName, @RequestParam String lastName,
+                                                   @RequestParam HelpDeskStatus helpDeskStatus) {
+        try {
+            List<HelpDesk> updatedList = helpDeskService.updateStatusByEmployeeName(firstName, lastName, helpDeskStatus);
+            return ResponseEntity.ok(updatedList);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteHelpDesk(@PathVariable Long id) {
