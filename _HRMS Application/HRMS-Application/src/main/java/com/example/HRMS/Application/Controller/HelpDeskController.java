@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin("*")
@@ -18,15 +19,34 @@ public class HelpDeskController {
     @Autowired
     private HelpDeskService helpDeskService;
 
+//    @PostMapping
+//    public ResponseEntity<?> createHelpDesk(
+//            @RequestParam("helpDesk") String helpDeskJson,
+//            @RequestParam(value = "file", required = false) MultipartFile file) {
+//        try {
+//            HelpDesk helpDesk = helpDeskService.createHelpDesk(helpDeskJson, file);
+//            return ResponseEntity.ok("HelpDesk ticket created with ID: " + helpDesk.getId());
+//        } catch (Exception e) {
+//            return ResponseEntity.status(500).body("Failed to create helpdesk ticket: " + e.getMessage());
+//        }
+//    }
+
     @PostMapping
     public ResponseEntity<?> createHelpDesk(
             @RequestParam("helpDesk") String helpDeskJson,
             @RequestParam(value = "file", required = false) MultipartFile file) {
         try {
             HelpDesk helpDesk = helpDeskService.createHelpDesk(helpDeskJson, file);
-            return ResponseEntity.ok("HelpDesk ticket created with ID: " + helpDesk.getId());
+
+
+            return ResponseEntity.ok(helpDesk);
+
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Failed to create helpdesk ticket: " + e.getMessage());
+
+            return ResponseEntity.status(500).body(Map.of(
+                    "error", "Failed to create helpdesk ticket",
+                    "message", e.getMessage()
+            ));
         }
     }
 
