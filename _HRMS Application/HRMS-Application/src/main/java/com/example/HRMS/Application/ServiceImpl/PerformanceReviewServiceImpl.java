@@ -35,43 +35,6 @@ public class PerformanceReviewServiceImpl implements PerformanceReviewService {
     @Autowired
     private TaskRepository taskRepository;
 
-//    public ResponseEntity<?> createReview(PerformanceReview review) {
-//        if (review.getEmployee() == null || review.getEmployee().getId() == null) {
-//            logger.error("Employee ID is required");
-//            return ResponseEntity.badRequest().body("Employee ID is required");
-//        }
-//
-//        Optional<Employee> empOpt = employeeRepo.findById(review.getEmployee().getId());
-//
-//        if (empOpt.isEmpty()) {
-//            logger.warn("Employee not found with ID: {}", review.getEmployee().getId());
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee not found");
-//        }
-//
-//        Employee employee = empOpt.get();
-//        review.setEmployee(employee);
-//
-//
-//        PerformanceReview saved = reviewRepo.save(review);
-//
-//
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("id", saved.getId());
-//        response.put("taskName", saved.getTaskName());
-//        response.put("managerReview", saved.getManagerReview());
-//        response.put("reviewDate", saved.getReviewDate());
-//
-//        // Partial employee info
-//        Map<String, Object> emp = new HashMap<>();
-//        emp.put("id", employee.getId());
-//        emp.put("name", employee.getFirstName() + " " + employee.getLastName());
-//        emp.put("email", employee.getEmail());
-//
-//        response.put("employee", emp);
-//
-//        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-//    }
-
     @Override
     public ResponseEntity<?> createReview(PerformanceReview review) {
         // Validate employee
