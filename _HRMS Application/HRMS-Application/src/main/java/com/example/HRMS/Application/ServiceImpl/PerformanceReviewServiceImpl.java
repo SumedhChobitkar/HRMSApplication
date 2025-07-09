@@ -3,8 +3,10 @@ import com.example.HRMS.Application.DTO.PerformanceReviewResponse;
 
 import com.example.HRMS.Application.Entity.Employee;
 import com.example.HRMS.Application.Entity.PerformanceReview;
+import com.example.HRMS.Application.Entity.Task;
 import com.example.HRMS.Application.Repository.EmployeeRepository;
 import com.example.HRMS.Application.Repository.PerformanceReviewRepository;
+import com.example.HRMS.Application.Repository.TaskRepository;
 import com.example.HRMS.Application.Service.PerformanceReviewService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,41 +32,88 @@ public class PerformanceReviewServiceImpl implements PerformanceReviewService {
     @Autowired
     private EmployeeRepository employeeRepo;
 
+    @Autowired
+    private TaskRepository taskRepository;
+
+//    public ResponseEntity<?> createReview(PerformanceReview review) {
+//        if (review.getEmployee() == null || review.getEmployee().getId() == null) {
+//            logger.error("Employee ID is required");
+//            return ResponseEntity.badRequest().body("Employee ID is required");
+//        }
+//
+//        Optional<Employee> empOpt = employeeRepo.findById(review.getEmployee().getId());
+//
+//        if (empOpt.isEmpty()) {
+//            logger.warn("Employee not found with ID: {}", review.getEmployee().getId());
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee not found");
+//        }
+//
+//        Employee employee = empOpt.get();
+//        review.setEmployee(employee);
+//
+//
+//        PerformanceReview saved = reviewRepo.save(review);
+//
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("id", saved.getId());
+//        response.put("taskName", saved.getTaskName());
+//        response.put("managerReview", saved.getManagerReview());
+//        response.put("reviewDate", saved.getReviewDate());
+//
+//        // Partial employee info
+//        Map<String, Object> emp = new HashMap<>();
+//        emp.put("id", employee.getId());
+//        emp.put("name", employee.getFirstName() + " " + employee.getLastName());
+//        emp.put("email", employee.getEmail());
+//
+//        response.put("employee", emp);
+//
+//        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+//    }
+
+    @Override
     public ResponseEntity<?> createReview(PerformanceReview review) {
+        // Validate employee
         if (review.getEmployee() == null || review.getEmployee().getId() == null) {
             logger.error("Employee ID is required");
             return ResponseEntity.badRequest().body("Employee ID is required");
         }
-
         Optional<Employee> empOpt = employeeRepo.findById(review.getEmployee().getId());
-
         if (empOpt.isEmpty()) {
             logger.warn("Employee not found with ID: {}", review.getEmployee().getId());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee not found");
         }
+        // Validate task
+          if (review.getTask() == null || review.getTask().getId() == null) {
+              logger.error("Task ID is required");
+              return ResponseEntity.badRequest().body("Task ID is required");
+          }
+          Optional<Task> taskOpt = taskRepository.findById(review.getTask().getId());
+          if (taskOpt.isEmpty()) {
+              logger.warn("Task not found with ID: {}", review.getTask().getId());
+              return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
+          }
+          // All valid, save review
+            Employee employee = empOpt.get();
+          Task task = taskOpt.get();
+          review.setEmployee(employee);
+          review.setTask(task);
+          PerformanceReview saved = reviewRepo.save(review);
 
-        Employee employee = empOpt.get();
-        review.setEmployee(employee);
+          Map<String, Object> response = new HashMap<>();
+          response.put("id", saved.getId());
+          response.put("taskName", saved.getTaskName());
+          response.put("managerReview", saved.getManagerReview());
+          response.put("reviewDate", saved.getReviewDate());
 
-        PerformanceReview saved = reviewRepo.save(review);
+          Map<String, Object> emp = new HashMap<>();
+          emp.put("id", employee.getId());
+          emp.put("name", employee.getFirstName() + " " + employee.getLastName());
+          emp.put("email", employee.getEmail());
+          response.put("employee", emp);
+          return ResponseEntity.status(HttpStatus.CREATED).body(response);}
 
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("id", saved.getId());
-        response.put("taskName", saved.getTaskName());
-        response.put("managerReview", saved.getManagerReview());
-        response.put("reviewDate", saved.getReviewDate());
-
-        // Partial employee info
-        Map<String, Object> emp = new HashMap<>();
-        emp.put("id", employee.getId());
-        emp.put("name", employee.getFirstName() + " " + employee.getLastName());
-        emp.put("email", employee.getEmail());
-
-        response.put("employee", emp);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
 
 
     public ResponseEntity<?> getAllReviews() {

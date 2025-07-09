@@ -22,6 +22,10 @@ public class PerformanceReview {
         @ManyToOne
         @JoinColumn(name = "employee_id", nullable = false)
         private Employee employee;
+
+        @ManyToOne
+        @JoinColumn(name = "task_id", nullable = false)
+        private Task task;
     }
 
 
