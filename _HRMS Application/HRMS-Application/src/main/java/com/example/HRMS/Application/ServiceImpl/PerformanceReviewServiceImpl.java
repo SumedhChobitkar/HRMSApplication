@@ -57,6 +57,12 @@ public class PerformanceReviewServiceImpl implements PerformanceReviewService {
               logger.warn("Task not found with ID: {}", review.getTask().getId());
               return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
           }
+
+        Optional<PerformanceReview> existingReview = reviewRepo.findByEmployeeIdAndTaskId(review.getEmployee().getId(), review.getTask().getId());
+        if (existingReview.isPresent()) {
+            logger.warn("Review already exists for employee ID {} and task ID {}", review.getEmployee().getId(), review.getTask().getId());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Review already exists for this task and employee");
+        }
           // All valid, save review
             Employee employee = empOpt.get();
           Task task = taskOpt.get();
