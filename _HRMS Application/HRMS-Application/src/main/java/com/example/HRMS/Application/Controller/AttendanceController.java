@@ -23,19 +23,29 @@ public class AttendanceController {
     private AttendanceService attendanceService;
 
 
+//    @PostMapping("/signIn")
+//    public ResponseEntity<?> markAttendance(@RequestBody CheckTimeDto checkInDto) {
+//        try {
+//            Attendance attendance = attendanceService.markAttendance(checkInDto);
+//
+//            Map<String,Object> response = new HashMap<>();
+//            response.put("employeeId", attendance.getEmployee().getId());
+//            response.put("attendanceId", attendance.getId());
+//            response.put("location", attendance.getLocation());
+//            response.put("clockIn", attendance.getClockIn());
+//            response.put("date", attendance.getDate());
+//            response.put("message", "Attendance marked successfully");
+//
+//            return ResponseEntity.ok(response);
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+//        }
+//    }
+
     @PostMapping("/signIn")
     public ResponseEntity<?> markAttendance(@RequestBody CheckTimeDto checkInDto) {
         try {
-            Attendance attendance = attendanceService.markAttendance(checkInDto);
-
-            Map<String,Object> response = new HashMap<>();
-            response.put("employeeId", attendance.getEmployee().getId());
-            response.put("attendanceId", attendance.getId());
-            response.put("location", attendance.getLocation());
-            response.put("clockIn", attendance.getClockIn());
-            response.put("date", attendance.getDate());
-            response.put("message", "Attendance marked successfully");
-
+            Map<String, Object> response = attendanceService.markAttendance(checkInDto);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

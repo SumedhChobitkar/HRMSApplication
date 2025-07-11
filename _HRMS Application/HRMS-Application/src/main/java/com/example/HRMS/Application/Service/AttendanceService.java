@@ -5,11 +5,12 @@ import com.example.HRMS.Application.Entity.Attendance;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Map;
 
 public interface AttendanceService {
 
-       public Attendance markAttendance(CheckTimeDto checkInDto);
-
+      // public Attendance markAttendance(CheckTimeDto checkInDto);
+      public Map<String, Object> markAttendance(CheckTimeDto checkInDto);
         // Method to mark attendance for an employee
         // public Attendance markAttendance(Attendance attendance);
         // Method to mark sign-out for an employee

@@ -35,53 +35,116 @@ public class PerformanceReviewServiceImpl implements PerformanceReviewService {
     @Autowired
     private TaskRepository taskRepository;
 
+//    @Override
+//    public ResponseEntity<?> createReview(PerformanceReview review) {
+//        // Validate employee
+//        if (review.getEmployee() == null || review.getEmployee().getId() == null) {
+//            logger.error("Employee ID is required");
+//            return ResponseEntity.badRequest().body("Employee ID is required");
+//        }
+//        Optional<Employee> empOpt = employeeRepo.findById(review.getEmployee().getId());
+//        if (empOpt.isEmpty()) {
+//            logger.warn("Employee not found with ID: {}", review.getEmployee().getId());
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee not found");
+//        }
+//        // Validate task
+//          if (review.getTask() == null || review.getTask().getId() == null) {
+//              logger.error("Task ID is required");
+//              return ResponseEntity.badRequest().body("Task ID is required");
+//          }
+//          Optional<Task> taskOpt = taskRepository.findById(review.getTask().getId());
+//          if (taskOpt.isEmpty()) {
+//              logger.warn("Task not found with ID: {}", review.getTask().getId());
+//              return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
+//          }
+//
+//        Optional<PerformanceReview> existingReview = reviewRepo.findByEmployeeIdAndTaskId(review.getEmployee().getId(), review.getTask().getId());
+//        if (existingReview.isPresent()) {
+//            logger.warn("Review already exists for employee ID {} and task ID {}", review.getEmployee().getId(), review.getTask().getId());
+//            return ResponseEntity.status(HttpStatus.CONFLICT).body("Review already exists for this task and employee");
+//        }
+//          // All valid, save review
+//            Employee employee = empOpt.get();
+//          Task task = taskOpt.get();
+//          review.setEmployee(employee);
+//          review.setTask(task);
+//          PerformanceReview saved = reviewRepo.save(review);
+//
+//          Map<String, Object> response = new HashMap<>();
+//          response.put("id", saved.getId());
+//          response.put("taskName", saved.getTaskName());
+//          response.put("managerReview", saved.getManagerReview());
+//          response.put("reviewDate", saved.getReviewDate());
+//          response.put("Review already exists f", saved.getEmployee().getId());
+//
+//          Map<String, Object> emp = new HashMap<>();
+//          emp.put("id", employee.getId());
+//          emp.put("name", employee.getFirstName() + " " + employee.getLastName());
+//          emp.put("email", employee.getEmail());
+//          response.put("employee", emp);
+//          return ResponseEntity.status(HttpStatus.CREATED).body(response);}
+
     @Override
     public ResponseEntity<?> createReview(PerformanceReview review) {
         // Validate employee
         if (review.getEmployee() == null || review.getEmployee().getId() == null) {
             logger.error("Employee ID is required");
-            return ResponseEntity.badRequest().body("Employee ID is required");
+            return ResponseEntity.badRequest().body(Map.of("message", "Employee ID is required"));
         }
+
         Optional<Employee> empOpt = employeeRepo.findById(review.getEmployee().getId());
         if (empOpt.isEmpty()) {
             logger.warn("Employee not found with ID: {}", review.getEmployee().getId());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Employee not found"));
         }
+
         // Validate task
-          if (review.getTask() == null || review.getTask().getId() == null) {
-              logger.error("Task ID is required");
-              return ResponseEntity.badRequest().body("Task ID is required");
-          }
-          Optional<Task> taskOpt = taskRepository.findById(review.getTask().getId());
-          if (taskOpt.isEmpty()) {
-              logger.warn("Task not found with ID: {}", review.getTask().getId());
-              return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
-          }
-
-        Optional<PerformanceReview> existingReview = reviewRepo.findByEmployeeIdAndTaskId(review.getEmployee().getId(), review.getTask().getId());
-        if (existingReview.isPresent()) {
-            logger.warn("Review already exists for employee ID {} and task ID {}", review.getEmployee().getId(), review.getTask().getId());
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Review already exists for this task and employee");
+        if (review.getTask() == null || review.getTask().getId() == null) {
+            logger.error("Task ID is required");
+            return ResponseEntity.badRequest().body(Map.of("message", "Task ID is required"));
         }
-          // All valid, save review
-            Employee employee = empOpt.get();
-          Task task = taskOpt.get();
-          review.setEmployee(employee);
-          review.setTask(task);
-          PerformanceReview saved = reviewRepo.save(review);
 
-          Map<String, Object> response = new HashMap<>();
-          response.put("id", saved.getId());
-          response.put("taskName", saved.getTaskName());
-          response.put("managerReview", saved.getManagerReview());
-          response.put("reviewDate", saved.getReviewDate());
+        Optional<Task> taskOpt = taskRepository.findById(review.getTask().getId());
+        if (taskOpt.isEmpty()) {
+            logger.warn("Task not found with ID: {}", review.getTask().getId());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Task not found"));
+        }
 
-          Map<String, Object> emp = new HashMap<>();
-          emp.put("id", employee.getId());
-          emp.put("name", employee.getFirstName() + " " + employee.getLastName());
-          emp.put("email", employee.getEmail());
-          response.put("employee", emp);
-          return ResponseEntity.status(HttpStatus.CREATED).body(response);}
+        // Check for existing review
+        Optional<PerformanceReview> existingReview = reviewRepo.findByEmployeeIdAndTaskId(
+                review.getEmployee().getId(),
+                review.getTask().getId()
+        );
+        if (existingReview.isPresent()) {
+            logger.warn("Review already exists for employee ID {} and task ID {}",
+                    review.getEmployee().getId(), review.getTask().getId());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", "Review already exists for this task and employee"));
+        }
+
+        // Save review
+        Employee employee = empOpt.get();
+        Task task = taskOpt.get();
+        review.setEmployee(employee);
+        review.setTask(task);
+        PerformanceReview saved = reviewRepo.save(review);
+
+        // Return response
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", saved.getId());
+        response.put("taskName", saved.getTaskName());
+        response.put("managerReview", saved.getManagerReview());
+        response.put("reviewDate", saved.getReviewDate());
+
+        Map<String, Object> emp = new HashMap<>();
+        emp.put("id", employee.getId());
+        emp.put("name", employee.getFirstName() + " " + employee.getLastName());
+        emp.put("email", employee.getEmail());
+
+        response.put("employee", emp);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 
 
 
