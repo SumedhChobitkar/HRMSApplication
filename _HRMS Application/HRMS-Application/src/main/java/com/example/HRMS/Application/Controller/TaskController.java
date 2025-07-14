@@ -117,13 +117,31 @@ public class TaskController {
         return new ResponseEntity<>(task.getAttachment(), headers, HttpStatus.OK);
     }
 
+//    @PutMapping("/{id}")
+//    public ResponseEntity<?> updateTask(@PathVariable Long id, @RequestBody @Valid Task task) {
+//        try {
+//            Task updated = taskService.updateTask(id, task);
+//            return ResponseEntity.ok("Task updated successfully");
+//        } catch (Exception e) {
+//            return ResponseEntity.status(500).body("Error updating task: " + e.getMessage());
+//        }
+//    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateTask(@PathVariable Long id, @RequestBody @Valid Task task) {
         try {
             Task updated = taskService.updateTask(id, task);
-            return ResponseEntity.ok("Task updated successfully");
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Task updated successfully");
+            response.put("task", updated);
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error updating task: " + e.getMessage());
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Error updating task: " + e.getMessage());
+
+            return ResponseEntity.status(500).body(error);
         }
     }
     @PutMapping("/employee/{employeeId}")
@@ -171,15 +189,25 @@ public class TaskController {
             return ResponseEntity.status(500).body("Error: " + e.getMessage());
         }
     }
-
-
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTask(@PathVariable Long id) {
-        try {
+    public ResponseEntity<Map<String, Object>> deleteTask(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();    try {
             taskService.deleteTask(id);
-            return ResponseEntity.ok("Task deleted successfully");
+            response.put("success", true);
+            response.put("message", "Task deleted successfully");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error deleting task: " + e.getMessage());
-        }
-    }
+            response.put("success", false);
+            response.put("message", "Error deleting task: " + e.getMessage());
+        return ResponseEntity.status(500).body(response);    }}
+
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<?> deleteTask(@PathVariable Long id) {
+//        try {
+//            taskService.deleteTask(id);
+//            return ResponseEntity.ok("Task deleted successfully");
+//        } catch (Exception e) {
+//            return ResponseEntity.status(500).body("Error deleting task: " + e.getMessage());
+//        }
+//    }
 }
