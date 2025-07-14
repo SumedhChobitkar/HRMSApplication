@@ -39,8 +39,8 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/Employee/login",
-                                "/Employee/**",
+                                "/api/Employee/login",
+                                "/api/Employee/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
@@ -67,10 +67,10 @@ public class SecurityConfig {
                         // Swagger
                        // .requestMatchers("/HRMS-Application/**").authenticated()
 
-                        .requestMatchers("/Employee/user/**").hasRole("USER")
-                        .requestMatchers("/Employee/manager/**").hasRole("MANAGER")
-                        .requestMatchers("/Employee/hr/**").hasRole("HR")
-                        .requestMatchers("/Employee/seniorhr/**").hasRole("SENIOR_HR")
+                        .requestMatchers("/api/Employee/user/**").hasRole("USER")
+                        .requestMatchers("/api/Employee/manager/**").hasRole("MANAGER")
+                        .requestMatchers("/api/Employee/hr/**").hasRole("HR")
+                        .requestMatchers("/api/Employee/seniorhr/**").hasRole("SENIOR_HR")
                         .requestMatchers("/api/employees/**").hasAnyRole("HR", "SENIOR_HR", "MANAGER","USER")
                         //Payroll
                         .requestMatchers("/api/salary/upload").hasAnyRole("HR", "SENIOR_HR")
