@@ -24,7 +24,7 @@ import java.util.*;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/Employee")
+@RequestMapping("/api/Employee")
 public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
