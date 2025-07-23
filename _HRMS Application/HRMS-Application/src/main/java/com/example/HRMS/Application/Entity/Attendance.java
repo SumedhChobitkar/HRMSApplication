@@ -28,14 +28,6 @@ public class Attendance {
 
     private LocalTime clockIn;
 
-    public String getWorkedHours() {
-        return workedHours;
-    }
-
-    public void setWorkedHours(String workedHours) {
-        this.workedHours = workedHours;
-    }
-
     private LocalTime clockOut;
 
     private String location;
@@ -102,4 +94,12 @@ public class Attendance {
     public void setLocation(String location) {
         this.location = location;
     }
+    public String getWorkedHours() {
+        return workedHours;
+    }
+
+    public void setWorkedHours(String workedHours) {
+        this.workedHours = workedHours;
+    }
+
 }
