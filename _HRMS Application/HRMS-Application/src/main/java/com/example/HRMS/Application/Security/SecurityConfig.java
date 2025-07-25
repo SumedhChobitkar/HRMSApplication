@@ -61,7 +61,9 @@ public class SecurityConfig {
                                 "/Employee/update-password",
                                 "/Employee/update-profile-picture",
                                 "/api/tasks/**",
-                                "/api/regularization-and-permission/**"
+                                "/api/regularization-and-permission/**",
+                                "/api/regularization-and-permission/permissions/{employeeId}",
+                                "/api/regularization-and-permission/regularizations/{employeeId}"
 
                         ).permitAll()
 
@@ -99,8 +101,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/regularization-and-permission/approve/{requestId}").hasAnyRole( "HR","MANAGER")
                         .requestMatchers("/api/regularization-and-permission/reject/{requestId}").hasAnyRole( "HR","MANAGER")
                         .requestMatchers("/api/regularization-and-permission/pending-requests").hasAnyRole( "HR","MANAGER")
-                        .requestMatchers("/api/regularization-and-permission//permissions/{employeeId}").hasAnyRole( "HR","MANAGER")
-                        .requestMatchers("/api/regularization-and-permission/regularizations/{employeeId}").hasAnyRole( "HR","MANAGER")
+                       // .requestMatchers("/api/regularization-and-permission//permissions/{employeeId}").hasAnyRole( "HR","MANAGER")
+                        //.requestMatchers("/api/regularization-and-permission/regularizations/{employeeId}").hasAnyRole( "HR","MANAGER")
 
 
                         //Holiday
