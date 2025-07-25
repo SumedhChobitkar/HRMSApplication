@@ -66,14 +66,12 @@ public class RegularizationAndPermissionController {
 
     // Get all permission requests by employee ID
     @GetMapping("/permissions/{employeeId}")
-    @PreAuthorize("hasAnyRole('HR', 'MANAGER')")
     public ResponseEntity<List<RegularizationAndPermission>> getPermissionsByEmployeeId(@PathVariable Long employeeId) {
         return ResponseEntity.ok(service.getPermissionsByEmployeeId(employeeId));
     }
 
     // Get all regularization requests by employee ID
     @GetMapping("/regularizations/{employeeId}")
-    @PreAuthorize("hasAnyRole('HR', 'MANAGER')")
     public ResponseEntity<List<RegularizationAndPermission>> getRegularizationsByEmployeeId(@PathVariable Long employeeId) {
         return ResponseEntity.ok(service.getRegularizationsByEmployeeId(employeeId));
     }
