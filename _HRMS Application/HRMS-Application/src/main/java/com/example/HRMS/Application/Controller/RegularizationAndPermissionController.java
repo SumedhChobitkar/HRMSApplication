@@ -64,6 +64,7 @@ public class RegularizationAndPermissionController {
         return ResponseEntity.ok(service.getAllPendingRequests());
     }
 
+
     // Get all permission requests by employee ID
     @GetMapping("/permissions/{employeeId}")
     public ResponseEntity<List<RegularizationAndPermission>> getPermissionsByEmployeeId(@PathVariable Long employeeId) {
@@ -75,7 +76,11 @@ public class RegularizationAndPermissionController {
     public ResponseEntity<List<RegularizationAndPermission>> getRegularizationsByEmployeeId(@PathVariable Long employeeId) {
         return ResponseEntity.ok(service.getRegularizationsByEmployeeId(employeeId));
     }
-
+    // Get all regularization and permission requests by employee ID
+    @GetMapping("/request/{employeeId}")
+    public ResponseEntity<List<RegularizationAndPermission>> getAllRequestByEmployeeId(@PathVariable Long employeeId) {
+        return ResponseEntity.ok(service.getRequestByEmployeeId(employeeId));
+    }
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyRole('HR', 'MANAGER')")
     public ResponseEntity<String> deleteRequestById(@PathVariable Long id) {

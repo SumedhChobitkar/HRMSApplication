@@ -82,6 +82,10 @@ public class RegularizationAndPermissionImpl implements RegularizationAndPermiss
     public List<RegularizationAndPermission> getRegularizationsByEmployeeId(Long employeeId) {
         return repository.findByEmployeeIdAndRequestType(employeeId, RequestType.REGULARIZATION);
     }
+    @Override
+    public List<RegularizationAndPermission> getRequestByEmployeeId(Long employeeId) {
+        return repository.findByEmployeeId(employeeId);
+    }
 
     @Override
     public void deleteRequestById(Long id) {
