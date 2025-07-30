@@ -13,5 +13,7 @@ public interface RegularizationAndPermissionRepository extends JpaRepository<Reg
     List<RegularizationAndPermission> findByApprovalStatus(ApprovalStatus approvalStatus);
 
     List<RegularizationAndPermission> findByEmployeeIdAndRequestType(Long employeeId, RequestType requestType);
+
+    List<RegularizationAndPermission> findByEmployeeId(Long employeeId);
 }
 

@@ -18,6 +18,7 @@ public interface RegularizationAndPermissionService {
     List<RegularizationAndPermission> getAllPendingRequests();
     List<RegularizationAndPermission> getPermissionsByEmployeeId(Long employeeId);
     List<RegularizationAndPermission> getRegularizationsByEmployeeId(Long employeeId);
+    public List<RegularizationAndPermission> getRequestByEmployeeId(Long employeeId);
     void deleteRequestById(Long id);
 }
 
