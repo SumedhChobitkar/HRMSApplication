@@ -23,9 +23,10 @@ public class RegularizationAndPermissionController {
     @PostMapping("/request-regularization/{employeeId}")
     public ResponseEntity<Map<String, Object>> requestRegularization(
             @PathVariable Long employeeId,
-            @RequestBody RegularizationAndPermission request) {
+            @RequestBody RegularizationAndPermission request,
+    @RequestParam (value = "email")String email){
 
-        RegularizationAndPermission result = service.requestRegularization(employeeId, request);
+        RegularizationAndPermission result = service.requestRegularization(employeeId, request,email);
         return ResponseEntity.ok(Map.of(
                 "message", "Regularization requested",
                 "status", result.getApprovalStatus(),
@@ -36,9 +37,10 @@ public class RegularizationAndPermissionController {
     @PostMapping("/request-permission/{employeeId}")
     public ResponseEntity<Map<String, Object>> requestPermission(
             @PathVariable Long employeeId,
-            @RequestBody RegularizationAndPermission request) {
+            @RequestBody RegularizationAndPermission request,
+            @RequestParam (value = "email")String email) {
 
-        RegularizationAndPermission result = service.requestPermission(employeeId, request);
+        RegularizationAndPermission result = service.requestPermission(employeeId, request,email);
         return ResponseEntity.ok(Map.of(
                 "message", "Permission requested",
                 "status", result.getApprovalStatus(),
