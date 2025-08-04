@@ -22,7 +22,6 @@ public class AttendanceController {
     @Autowired
     private AttendanceService attendanceService;
 
-
 //    @PostMapping("/signIn")
 //    public ResponseEntity<?> markAttendance(@RequestBody CheckTimeDto checkInDto) {
 //        try {
