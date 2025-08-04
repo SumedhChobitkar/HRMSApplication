@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface RegularizationAndPermissionService {
 
-    RegularizationAndPermission requestRegularization(Long employeeId, RegularizationAndPermission request);
+    RegularizationAndPermission requestRegularization(Long employeeId, RegularizationAndPermission request,String email);
 
-    RegularizationAndPermission requestPermission(Long employeeId, RegularizationAndPermission request);
+    RegularizationAndPermission requestPermission(Long employeeId, RegularizationAndPermission request,String email);
 
     RegularizationAndPermission approveRequest(Long requestId);
 

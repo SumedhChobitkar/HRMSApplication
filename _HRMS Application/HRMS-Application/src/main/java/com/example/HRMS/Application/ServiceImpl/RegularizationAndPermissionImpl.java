@@ -4,6 +4,7 @@ import com.example.HRMS.Application.Entity.*;
 import com.example.HRMS.Application.Repository.AttendanceRepository;
 import com.example.HRMS.Application.Repository.EmployeeRepository;
 import com.example.HRMS.Application.Repository.RegularizationAndPermissionRepository;
+import com.example.HRMS.Application.Service.EmailService;
 import com.example.HRMS.Application.Service.RegularizationAndPermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,21 +20,61 @@ public class RegularizationAndPermissionImpl implements RegularizationAndPermiss
 
     @Autowired
     private EmployeeRepository employeeRepository;
+    @Autowired
+    private EmailService emailService;
+
 
     @Override
-    public RegularizationAndPermission requestRegularization(Long employeeId, RegularizationAndPermission request) {
+    public RegularizationAndPermission requestRegularization(Long employeeId, RegularizationAndPermission request,String email) {
         validateRequest(employeeId, request);
         request.setRequestType(RequestType.REGULARIZATION);
         request.setApprovalStatus(ApprovalStatus.PENDING);
-        return repository.save(request);
+        //return repository.save(request);
+        RegularizationAndPermission savedRequest = repository.save(request);
+
+       // String email = savedRequest.getEmployee().getEmail();
+        String email1 = email;
+        String subject = "Permission Request Submitted";
+        String body = String.format(
+                "Hello %s,\n\nYour permission request has been submitted with the following details:\n" +
+                        "Date: %s\nClock In: %s\nClock Out: %s\nReason: %s\nStatus: %s",
+                savedRequest.getEmployee().getFirstName(),
+                savedRequest.getDate(),
+                savedRequest.getClockIn(),
+                savedRequest.getClockOut(),
+                savedRequest.getReason(),
+                savedRequest.getApprovalStatus()
+        );
+
+        emailService.sendEmail(email1, subject, body);
+        return savedRequest;
     }
 
     @Override
-    public RegularizationAndPermission requestPermission(Long employeeId, RegularizationAndPermission request) {
+    public RegularizationAndPermission requestPermission(Long employeeId, RegularizationAndPermission request,String email) {
         validateRequest(employeeId, request);
         request.setRequestType(RequestType.PERMISSION);
         request.setApprovalStatus(ApprovalStatus.PENDING);
-        return repository.save(request);
+        //return repository.save(request);
+        RegularizationAndPermission savedRequest = repository.save(request);
+
+        //String email = savedRequest.getEmployee().getEmail();
+        String email2 = email;
+        String subject = "Permission Request Submitted";
+        String body = String.format(
+                "Hello %s,\n\nYour permission request has been submitted with the following details:\n" +
+                        "Date: %s\nClock In: %s\nClock Out: %s\nReason: %s\nStatus: %s",
+                savedRequest.getEmployee().getFirstName(),
+                savedRequest.getDate(),
+                savedRequest.getClockIn(),
+                savedRequest.getClockOut(),
+                savedRequest.getReason(),
+                savedRequest.getApprovalStatus()
+        );
+
+        emailService.sendEmail(email2, subject, body);
+        return savedRequest;
+
     }
 
     @Override
