@@ -59,6 +59,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         // Update profile picture
         existing.setProfilePicture(employee.getProfilePicture());
 
+        if(existing.getUser()!= null) {
+            existing.getUser().setRole(employee.getRole());
+        }
+
         return employeeRepository.save(existing);
     }
 

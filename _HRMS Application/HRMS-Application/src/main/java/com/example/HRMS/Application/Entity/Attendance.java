@@ -34,6 +34,8 @@ public class Attendance {
 
     private String workedHours;
 
+    private String remark;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     @JsonIgnore
@@ -42,7 +44,7 @@ public class Attendance {
     @Enumerated(EnumType.STRING)
     private AttendanceStatus status;
 
-    private String issingin;
+    private String isSingIn;
     // Getters and setters
 
 
