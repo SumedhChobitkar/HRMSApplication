@@ -179,7 +179,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             Duration duration = Duration.between(pending.getClockIn(), pending.getClockOut());
             String worked = String.format("%d hours %d minutes", duration.toHours(), duration.toMinutesPart());
             pending.setWorkedHours(worked);
-            pending.setIssingin("FALSE");
+            pending.setIsSingIn("FALSE");
 
             if (duration.toHours() < 9) {
                 pending.setStatus(AttendanceStatus.HALF_DAY);
@@ -206,7 +206,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         attendance.setDate(today);
         attendance.setLocation(checkInDto.getLocation());
         attendance.setStatus(AttendanceStatus.PRESENT);
-        attendance.setIssingin("TRUE");
+        attendance.setIsSingIn("TRUE");
 
         Attendance saved = attendanceRepository.save(attendance);
         logger.info("Attendance marked successfully with ID: {}", saved.getId());
@@ -233,7 +233,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         Duration duration = Duration.between(attendance.getClockIn(), now);
         String worked = String.format("%d hours %d minutes", duration.toHours(), duration.toMinutesPart());
         attendance.setWorkedHours(worked);
-        attendance.setIssingin("FALSE");
+        attendance.setIsSingIn("FALSE");
 
         if (duration.toHours() < 9) {
             attendance.setStatus(AttendanceStatus.HALF_DAY);
