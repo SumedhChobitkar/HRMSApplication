@@ -112,6 +112,10 @@ public void updatePassword(Long userId, String newPassword) {
 //        return userRepository.findById(id);
 //    }
 //
+public List<User> getUsersByRoles(List<Role> roles) {
+    return userRepository.findByRoleIn(roles);
+}
+
     public List<User> getCcSuggestions(String query, List<Role> roles) {
         return userRepository.findByEmailContainingIgnoreCaseAndRoleIn(query, roles);
     }

@@ -18,6 +18,7 @@ public interface UserService {
     void updateProfilePicture(Long userId, MultipartFile profilePicture) throws IOException;
     Optional<byte[]> getProfilePictureByIdOrEmail(Long userId, String email);
     Optional<User> findById(Long id);
+    public List<User> getUsersByRoles(List<Role> roles);
     public List<User> getCcSuggestions(String query, List<Role> roles) ;
 
 
