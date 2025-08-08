@@ -111,12 +111,12 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         request.setStatus(status);
         return repository.save(request);
     }
-    @Override
-    public String getApplyingToEmail() {
-        String hrEmail = "hr@openfuturetechnologies.com";
-        logger.debug("Returning hardcoded HR email: {}", hrEmail);
-        return hrEmail;
-    }
+//    @Override
+//    public String getApplyingToEmail() {
+//        String hrEmail = "hr@openfuturetechnologies.com";
+//        logger.debug("Returning hardcoded HR email: {}", hrEmail);
+//        return hrEmail;
+//    }
     @Override
     // 2. Return all employee emails
     public List<String> getAllEmployeeEmails() {

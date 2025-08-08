@@ -141,17 +141,32 @@ public class LeaveRequestController {
         }
     }
 
-    @GetMapping("/applyingTo")
-    public ResponseEntity<?> getApplyingToEmail() {
-        logger.info("Fetching HR email for applyingTo field");
+//    @GetMapping("/applyingTo")
+//    public ResponseEntity<?> getApplyingToEmail() {
+//        logger.info("Fetching HR email for applyingTo field");
+//
+//        String email = service.getApplyingToEmail();
+//        if (email == null || email.isEmpty()) {
+//            logger.error("HR email not found");
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("HR email not configured");
+//        }
+//        return ResponseEntity.ok(email);
+//    }
+@GetMapping("/applyingTo")
+public ResponseEntity<List<String>> getManagerEmailOptions() {
+    List<Role> rolesToInclude = Arrays.asList(Role.HR, Role.SENIOR_HR, Role.MANAGER);
+    List<User> eligibleUsers = userService.getUsersByRoles(rolesToInclude);
 
-        String email = service.getApplyingToEmail();
-        if (email == null || email.isEmpty()) {
-            logger.error("HR email not found");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("HR email not configured");
-        }
-        return ResponseEntity.ok(email);
-    }
+    List<String> emailOptions = eligibleUsers.stream()
+            .map(user -> String.format("%s %s <%s>",
+                    user.getFirstName() != null ? user.getFirstName() : "",
+                    user.getLastName() != null ? user.getLastName() : "",
+                    user.getEmail()))
+            .collect(Collectors.toList());
+
+    return ResponseEntity.ok(emailOptions);
+}
+
 
     @GetMapping("/cc-suggestions")
     public ResponseEntity<List<String>> getCcToSuggestions(@RequestParam String query) {
