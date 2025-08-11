@@ -40,6 +40,11 @@ public class User {
 
     private String isregistered;
 
+    private boolean verified = false;
+
+    @OneToOne
+    @Transient
+    private ForgotPasswordOtp forgotPasswordOtp;
 
 }
 
