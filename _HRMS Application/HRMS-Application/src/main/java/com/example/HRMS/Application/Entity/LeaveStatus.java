@@ -1,5 +1,5 @@
 package com.example.HRMS.Application.Entity;
 
 public enum LeaveStatus {
-    PENDING, APPROVED, REJECTED
+    PENDING, APPROVED, REJECTED,CANCELLED
 }

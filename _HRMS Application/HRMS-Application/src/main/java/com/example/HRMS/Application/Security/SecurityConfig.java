@@ -51,6 +51,7 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/api/leaves/**",
+                                "/api/leaves//CancelLeaveById/{id}",
                                 "/api/attendance/**",
                                 "/api/helpdesk/**",
 //                                "/api/attendance/signIn",

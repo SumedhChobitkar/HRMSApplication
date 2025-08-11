@@ -208,5 +208,30 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         logger.info("Successfully deleted leave request with ID: {}", id);
     }
 
+
+    @Override
+    public void cancelLeaveRequest(Long id) {
+        logger.info("Attempting to cancel leave request with ID: {}", id);
+
+        LeaveRequest leaveRequest = repository.findById(id)
+                .orElseThrow(() -> {
+                    logger.warn("Leave request not found with ID: {}", id);
+                    return new RuntimeException("Leave request not found with ID: " + id);
+                });
+
+        if (leaveRequest.getStatus() == LeaveStatus.CANCELLED) {
+            logger.warn("Leave request with ID {} is already cancelled.", id);
+            throw new RuntimeException("Leave request is already cancelled.");
+        }
+
+        if (leaveRequest.getStatus() == LeaveStatus.PENDING) {
+            leaveRequest.setStatus(LeaveStatus.CANCELLED);
+            repository.save(leaveRequest);
+            logger.info("Successfully cancelled leave request with ID: {}", id);
+        } else {
+            throw new RuntimeException("Leave request with ID " + id + " cannot be cancelled in its current state.");
+        }
+    }
+
 }
 
