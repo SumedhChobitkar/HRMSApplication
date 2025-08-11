@@ -205,6 +205,23 @@ public ResponseEntity<List<String>> getManagerEmailOptions() {
                     .body("Failed to fetch leave balance.");
         }
     }
+    @PutMapping(value = "/updateLeave/{leaveId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> updateLeave(@PathVariable Long leaveId,
+                                         @RequestPart("request") LeaveRequest updatedRequest,
+                                         @RequestPart(value = "file", required = false) MultipartFile file) {
+        logger.info("Updating leave request ID: {}", leaveId);
+
+        try {
+            LeaveRequest updated = service.updateLeave(leaveId, updatedRequest, file);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error updating leave request: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Server error while updating leave request.");
+        }
+    }
 
 
 

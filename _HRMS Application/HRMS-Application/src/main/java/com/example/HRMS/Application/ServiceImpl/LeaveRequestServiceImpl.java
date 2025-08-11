@@ -198,6 +198,36 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     }
 
     @Override
+    public LeaveRequest updateLeave(Long leaveId, LeaveRequest updatedRequest, MultipartFile file) throws Exception {
+        LeaveRequest existing = repository.findById(leaveId)
+                .orElseThrow(() -> new RuntimeException("Leave request not found with ID: " + leaveId));
+
+        if (existing.getStatus() != LeaveStatus.PENDING) {
+            throw new IllegalStateException("Only PENDING leave requests can be edited.");
+        }
+
+        // Update relevant fields
+        existing.setFromDate(updatedRequest.getFromDate());
+        existing.setToDate(updatedRequest.getToDate());
+        existing.setReason(updatedRequest.getReason());
+        existing.setLeaveType(updatedRequest.getLeaveType());
+        existing.setApplyingTo(updatedRequest.getApplyingTo());
+        existing.setContactDetails(updatedRequest.getContactDetails());
+
+        if (updatedRequest.getCcToList() != null) {
+            existing.setCcTo(String.join(",", updatedRequest.getCcToList()));
+        }
+
+        if (file != null) {
+            existing.setFileName(file.getOriginalFilename());
+            existing.setFileType(file.getContentType());
+            existing.setData(file.getBytes());
+        }
+
+        return repository.save(existing);
+    }
+
+    @Override
     public void deleteLeaveRequest(Long id) {
         logger.info("Attempting to delete leave request with ID: {}", id);
         if (!repository.existsById(id)) {
