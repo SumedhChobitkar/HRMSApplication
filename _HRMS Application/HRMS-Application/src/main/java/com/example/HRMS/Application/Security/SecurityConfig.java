@@ -69,7 +69,8 @@ public class SecurityConfig {
                                 "/api/tasks/**",
                                 "/api/regularization-and-permission/**",
                                 "/api/regularization-and-permission/permissions/{employeeId}",
-                                "/api/regularization-and-permission/regularizations/{employeeId}"
+                                "/api/regularization-and-permission/regularizations/{employeeId}",
+                                "/api/forgotPassword/**"
 
                         ).permitAll()
 
