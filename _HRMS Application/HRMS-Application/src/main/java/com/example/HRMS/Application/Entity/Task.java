@@ -19,6 +19,7 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 2000)
     private String taskName;
     private String assignee;
 
@@ -41,9 +42,6 @@ public class Task {
 
     @Column(updatable = false)
     private LocalDate taskAssignDate;
-
-
-
 
 
     @Lob
