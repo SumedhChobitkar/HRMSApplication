@@ -141,17 +141,7 @@ public class LeaveRequestController {
         }
     }
 
-//    @GetMapping("/applyingTo")
-//    public ResponseEntity<?> getApplyingToEmail() {
-//        logger.info("Fetching HR email for applyingTo field");
-//
-//        String email = service.getApplyingToEmail();
-//        if (email == null || email.isEmpty()) {
-//            logger.error("HR email not found");
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("HR email not configured");
-//        }
-//        return ResponseEntity.ok(email);
-//    }
+
 @GetMapping("/applyingTo")
 public ResponseEntity<List<String>> getManagerEmailOptions() {
     List<Role> rolesToInclude = Arrays.asList(Role.HR, Role.SENIOR_HR, Role.MANAGER);
@@ -197,26 +187,7 @@ public ResponseEntity<List<String>> getManagerEmailOptions() {
 
         return ResponseEntity.ok(emails);
     }
-//    /*@GetMapping("/leaveBalance/{employeeId}")
-//    public ResponseEntity<?> getLeaveBalance(@PathVariable Long employeeId) {
-//        logger.info("Fetching leave balance for employeeId: {}", employeeId);
-//
-//        try {
-//            Map<String, Object> leaveBalance = service.getLeaveBalance(employeeId);
-//
-//            if (leaveBalance.isEmpty()) {
-//                logger.warn("No approved leave records found for employeeId: {}", employeeId);
-//                return ResponseEntity.ok("No leave data found for the employee.");
-//            }
-//
-//            return ResponseEntity.ok(leaveBalance);
-//
-//        } catch (Exception e) {
-//            logger.error("Error occurred while fetching leave balance for employeeId: {}", employeeId, e);
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body("Failed to fetch leave balance.");
-//        }
-//    }*/
+
     @GetMapping("/leaveBalance/{employeeId}")
     public ResponseEntity<?> getLeaveBalance(@PathVariable Long employeeId) {
         logger.info("Fetching leave balance for employeeId: {}", employeeId);
@@ -247,6 +218,21 @@ public ResponseEntity<List<String>> getManagerEmailOptions() {
             return ResponseEntity.ok(message);
         } catch (Exception e) {
             String error = "Error deleting leave request with ID " + id + ": " + e.getMessage();
+            logger.error(error);
+            return ResponseEntity.status(404).body(error);
+        }
+    }
+
+    @PutMapping("/CancelLeaveById/{id}")
+    public ResponseEntity<String> cancelLeave(@PathVariable("id") Long id) {
+        logger.info("Cancelling leave request with ID: {}", id);
+        try {
+            service.cancelLeaveRequest(id);
+            String message = "Leave request with ID " + id + " has been successfully cancelled.";
+            logger.info(message);
+            return ResponseEntity.ok(message);
+        } catch (RuntimeException e) {
+            String error = "Error cancelling leave request with ID " + id + ": " + e.getMessage();
             logger.error(error);
             return ResponseEntity.status(404).body(error);
         }
