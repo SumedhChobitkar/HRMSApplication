@@ -46,6 +46,7 @@ public class HelpDeskServiceImpl implements HelpDeskService {
                     .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + employeeId));
             helpDesk.setEmployee(employee);
             helpDesk.setHelpDeskStatus(HelpDeskStatus.PENDING);
+            helpDesk.setDate(LocalDate.now());
             return repository.save(helpDesk);
         } catch (Exception e) {
             throw new RuntimeException("Error creating helpdesk entry: " + e.getMessage());
@@ -79,6 +80,7 @@ public class HelpDeskServiceImpl implements HelpDeskService {
                 .orElseThrow(() -> new EntityNotFoundException("HelpDesk not found with id: " + id));
 
         helpDesk.setHelpDeskStatus(helpDeskStatus);
+        helpDesk.setDate(LocalDate.now());
         return repository.save(helpDesk);
     }
 
@@ -86,6 +88,7 @@ public class HelpDeskServiceImpl implements HelpDeskService {
         List<HelpDesk> list = repository.findByEmployeeId(empId);
         if (list.isEmpty()) throw new EntityNotFoundException("No HelpDesk entries for employee ID " + empId);
         list.forEach(h -> h.setHelpDeskStatus(helpDeskStatus));
+
         return repository.saveAll(list);
     }
 
