@@ -45,6 +45,7 @@ public class LeaveRequest {
     @Transient
     private List<String> ccToList;
     private String employeeName;
+    private String remark;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "employee_id", referencedColumnName = "id", insertable = false, updatable = false)
