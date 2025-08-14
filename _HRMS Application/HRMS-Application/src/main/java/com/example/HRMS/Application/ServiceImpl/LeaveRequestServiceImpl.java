@@ -215,7 +215,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         return null;
     }
 
-    @Override
+   /*@Override
     public LeaveRequest updateLeaveStatus(Long leaveId, LeaveStatus status) {
         LeaveRequest leave = repository.findById(leaveId)
                 .orElseThrow(() -> new RuntimeException("Leave request not found with ID: " + leaveId));
@@ -227,8 +227,25 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
         leave.setStatus(status);
         return repository.save(leave);
-    }
+    }*/
+   @Override
+   public LeaveRequest updateLeaveStatus(Long leaveId, LeaveStatus status) {
+       LeaveRequest leave = repository.findById(leaveId)
+               .orElseThrow(() -> new RuntimeException("Leave request not found with ID: " + leaveId));
 
+       // Validate only if approving
+       if (status == LeaveStatus.APPROVED) {
+           validateLeaveLimit(leave);
+           leave.setRemark("Leave approved");
+       } else if (status == LeaveStatus.REJECTED) {
+           leave.setRemark("Leave rejected");
+       } else {
+           leave.setRemark("Leave status updated to " + status);
+       }
+
+       leave.setStatus(status);
+       return repository.save(leave);
+   }
 
 
     private void validateLeaveLimit(LeaveRequest request) {
