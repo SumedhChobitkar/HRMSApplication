@@ -5,6 +5,8 @@ import com.example.HRMS.Application.Entity.HelpDesk;
 import com.example.HRMS.Application.Entity.HelpDeskStatus;
 import com.example.HRMS.Application.Service.HelpDeskService;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,8 @@ public class HelpDeskController {
 
     @Autowired
     private HelpDeskService helpDeskService;
+
+    private static final Logger logger = LoggerFactory.getLogger(HelpDeskController.class);
 
 //    @PostMapping
 //    public ResponseEntity<?> createHelpDesk(
@@ -140,5 +144,22 @@ public class HelpDeskController {
         }
     }
 
+    @PutMapping("/{id}/approveStatus")
+    public ResponseEntity<HelpDesk> approveHelpDeskStatus(
+            @PathVariable Long id,
+            @RequestParam(required = false) String remark) {
+        logger.info("API request to approve HelpDesk ID: {}", id);
+        HelpDesk approved = helpDeskService.approveHelpDeskStatus(id, remark);
+        return ResponseEntity.ok(approved);
+    }
+
+    @PutMapping("/{id}/rejectStatus")
+    public ResponseEntity<HelpDesk> rejectHelpDeskStatus(
+            @PathVariable Long id,
+            @RequestParam(required = false) String remark) {
+        logger.info("API request to reject HelpDesk ID: {}", id);
+        HelpDesk rejected = helpDeskService.rejectHelpDeskStatus(id, remark);
+        return ResponseEntity.ok(rejected);
+    }
 
 }

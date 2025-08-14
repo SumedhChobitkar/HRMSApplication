@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -37,6 +38,12 @@ public class HelpDesk {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private HelpDeskStatus helpDeskStatus;
+
+    private LocalDate date;
+
+    private String remark;
+
+    private String employeeName;
 
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)

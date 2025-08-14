@@ -19,4 +19,7 @@ public interface HelpDeskService {
 
     public List<HelpDesk> updateStatusByEmployeeName(String firstName, String lastName, HelpDeskStatus helpDeskStatus);
 
+    HelpDesk approveHelpDeskStatus(Long id, String remark);
+
+    HelpDesk rejectHelpDeskStatus(Long id, String remark);
 }

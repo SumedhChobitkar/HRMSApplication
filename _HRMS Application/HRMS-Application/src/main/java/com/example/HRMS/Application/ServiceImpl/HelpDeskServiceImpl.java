@@ -4,16 +4,20 @@ package com.example.HRMS.Application.ServiceImpl;
 import com.example.HRMS.Application.Entity.Employee;
 import com.example.HRMS.Application.Entity.HelpDesk;
 import com.example.HRMS.Application.Entity.HelpDeskStatus;
+import com.example.HRMS.Application.Exception.HelpDeskNotFoundException;
 import com.example.HRMS.Application.Repository.EmployeeRepository;
 import com.example.HRMS.Application.Repository.HelpDeskRepository;
 import com.example.HRMS.Application.Service.HelpDeskService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -23,6 +27,8 @@ public class HelpDeskServiceImpl implements HelpDeskService {
     private HelpDeskRepository repository;
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(HelpDeskServiceImpl.class);
 
     @Override
     public HelpDesk createHelpDesk(String helpDeskJson, MultipartFile file) {
@@ -90,4 +96,51 @@ public class HelpDeskServiceImpl implements HelpDeskService {
         return repository.saveAll(list);
     }
 
+    @Override
+    public HelpDesk approveHelpDeskStatus(Long id, String remark) {
+        try {
+            logger.info("Attempting to approve HelpDesk with ID: {}", id);
+            HelpDesk helpDesk = repository.findById(id)
+                    .orElseThrow(() -> new HelpDeskNotFoundException("HelpDesk not found with id: " + id));
+
+            helpDesk.setHelpDeskStatus(HelpDeskStatus.APPROVED);
+            helpDesk.setRemark(remark);
+            helpDesk.setDate(LocalDate.now());
+
+            HelpDesk updated = repository.save(helpDesk);
+            logger.info("HelpDesk ID {} approved successfully.", id);
+            return updated;
+
+        } catch (HelpDeskNotFoundException e) {
+            logger.error("HelpDesk approval failed: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Unexpected error occurred while approving HelpDesk: {}", e.getMessage(), e);
+            throw new RuntimeException("Error while approving HelpDesk", e);
+        }
+    }
+
+    @Override
+    public HelpDesk rejectHelpDeskStatus(Long id, String remark) {
+        try {
+            logger.info("Attempting to reject HelpDesk with ID: {}", id);
+            HelpDesk helpDesk = repository.findById(id)
+                    .orElseThrow(() -> new HelpDeskNotFoundException("HelpDesk not found with id: " + id));
+
+            helpDesk.setHelpDeskStatus(HelpDeskStatus.REJECTED);
+            helpDesk.setRemark(remark);
+            helpDesk.setDate(LocalDate.now());
+
+            HelpDesk updated = repository.save(helpDesk);
+            logger.info("HelpDesk ID {} rejected successfully.", id);
+            return updated;
+
+        } catch (HelpDeskNotFoundException e) {
+            logger.error("HelpDesk rejection failed: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Unexpected error occurred while rejecting HelpDesk: {}", e.getMessage(), e);
+            throw new RuntimeException("Error while rejecting HelpDesk", e);
+        }
+    }
 }
