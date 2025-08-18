@@ -22,4 +22,6 @@ public interface HelpDeskService {
     HelpDesk approveHelpDeskStatus(Long id, String remark);
 
     HelpDesk rejectHelpDeskStatus(Long id, String remark);
+
+    List<HelpDesk> getHelpDesksByEmployeeId(Long employeeId);
 }

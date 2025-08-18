@@ -146,4 +146,24 @@ public class HelpDeskServiceImpl implements HelpDeskService {
             throw new RuntimeException("Error while rejecting HelpDesk", e);
         }
     }
+
+    @Override
+    public List<HelpDesk> getHelpDesksByEmployeeId(Long employeeId) {
+        try {
+            logger.info("Fetching HelpDesk records for employee ID: {}", employeeId);
+            List<HelpDesk> helpDesks = repository.findByEmployeeId(employeeId);
+
+            if (helpDesks.isEmpty()) {
+                throw new HelpDeskNotFoundException("No HelpDesk records found for employee ID: " + employeeId);
+            }
+
+            return helpDesks;
+        } catch (HelpDeskNotFoundException e) {
+            logger.error("Error: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Unexpected error while fetching HelpDesk by employee ID: {}", e.getMessage(), e);
+            throw new RuntimeException("Error fetching HelpDesk by employee ID", e);
+        }
+    }
 }

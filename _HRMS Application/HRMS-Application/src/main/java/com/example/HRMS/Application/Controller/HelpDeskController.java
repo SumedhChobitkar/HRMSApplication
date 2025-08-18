@@ -25,19 +25,7 @@ public class HelpDeskController {
 
     private static final Logger logger = LoggerFactory.getLogger(HelpDeskController.class);
 
-//    @PostMapping
-//    public ResponseEntity<?> createHelpDesk(
-//            @RequestParam("helpDesk") String helpDeskJson,
-//            @RequestParam(value = "file", required = false) MultipartFile file) {
-//        try {
-//            HelpDesk helpDesk = helpDeskService.createHelpDesk(helpDeskJson, file);
-//            return ResponseEntity.ok("HelpDesk ticket created with ID: " + helpDesk.getId());
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).body("Failed to create helpdesk ticket: " + e.getMessage());
-//        }
-//    }
-
-    @PostMapping
+    @PostMapping("/createHelpDesk")
     public ResponseEntity<?> createHelpDesk(
             @RequestParam("helpDesk") String helpDeskJson,
             @RequestParam(value = "file", required = false) MultipartFile file) {
@@ -56,10 +44,11 @@ public class HelpDeskController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/getAllHelpDesks")
     public ResponseEntity<List<HelpDesk>> getAllHelpDesks() {
         return ResponseEntity.ok(helpDeskService.getAllHelpDesks());
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getHelpDeskById(@PathVariable Long id) {
         try {
@@ -162,4 +151,10 @@ public class HelpDeskController {
         return ResponseEntity.ok(rejected);
     }
 
+    @GetMapping("/getHelpDesksByEmployeeId/{employeeId}")
+    public ResponseEntity<List<HelpDesk>> getHelpDesksByEmployeeId(@PathVariable("employeeId") Long employeeId) {
+        logger.info("API request to fetch HelpDesk records for employee ID: {}", employeeId);
+        List<HelpDesk> helpDesks = helpDeskService.getHelpDesksByEmployeeId(employeeId);
+        return ResponseEntity.ok(helpDesks);
+    }
 }
