@@ -36,6 +36,8 @@ public interface LeaveRequestService {
  List<Map<String, Object>> getLeaveStatusesWithDatesByEmployeeId(Long employeeId);
  List<LeaveRequest> getLeaveByEmployeeName(String name);
  LeaveRequest updateLeave(Long leaveId, LeaveRequest updatedRequest, MultipartFile file) throws Exception;
+ public LeaveRequest addRemark(Long leaveId, String remark);
+ public String getRemarkByLeaveId(Long leaveId);
  void cancelLeaveRequest(Long id);
  public LeaveRequest updateLeaveStatus(Long leaveId, LeaveStatus status);
 

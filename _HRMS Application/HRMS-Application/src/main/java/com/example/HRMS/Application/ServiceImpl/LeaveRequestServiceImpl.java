@@ -228,24 +228,50 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         leave.setStatus(status);
         return repository.save(leave);
     }*/
-   @Override
-   public LeaveRequest updateLeaveStatus(Long leaveId, LeaveStatus status) {
-       LeaveRequest leave = repository.findById(leaveId)
-               .orElseThrow(() -> new RuntimeException("Leave request not found with ID: " + leaveId));
+//   @Override
+//   public LeaveRequest updateLeaveStatus(Long leaveId, LeaveStatus status) {
+//       LeaveRequest leave = repository.findById(leaveId)
+//               .orElseThrow(() -> new RuntimeException("Leave request not found with ID: " + leaveId));
+//
+//       // Validate only if approving
+//       if (status == LeaveStatus.APPROVED) {
+//           validateLeaveLimit(leave);
+//           leave.setRemark("Leave approved");
+//       } else if (status == LeaveStatus.REJECTED) {
+//           leave.setRemark("Leave rejected");
+//       } else {
+//           leave.setRemark("Leave status updated to " + status);
+//       }
+//
+//       leave.setStatus(status);
+//       return repository.save(leave);
+//   }
 
-       // Validate only if approving
-       if (status == LeaveStatus.APPROVED) {
-           validateLeaveLimit(leave);
-           leave.setRemark("Leave approved");
-       } else if (status == LeaveStatus.REJECTED) {
-           leave.setRemark("Leave rejected");
-       } else {
-           leave.setRemark("Leave status updated to " + status);
-       }
+    @Override
+    public LeaveRequest updateLeaveStatus(Long leaveId, LeaveStatus status) {
+        LeaveRequest leave = repository.findById(leaveId)
+                .orElseThrow(() -> new RuntimeException("Leave request not found with ID: " + leaveId));
 
-       leave.setStatus(status);
-       return repository.save(leave);
-   }
+        // If status is null or not valid → default to PENDING
+        if (status == null ||
+                (status != LeaveStatus.APPROVED &&
+                        status != LeaveStatus.REJECTED &&
+                        status != LeaveStatus.CANCELLED)) {
+            status = LeaveStatus.PENDING;
+        }
+
+        // Validate only if approving
+        if (status == LeaveStatus.APPROVED) {
+            validateLeaveLimit(leave);
+        }
+
+        // ✅ Only set status, don't modify remark
+        leave.setStatus(status);
+
+        return repository.save(leave);
+    }
+
+
 
 
     private void validateLeaveLimit(LeaveRequest request) {
@@ -426,6 +452,26 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
         return repository.save(existing);
     }
+    @Override
+    public LeaveRequest addRemark(Long leaveId, String remark) {
+        logger.info("Adding remark for leaveId: {}", leaveId);
+
+        LeaveRequest leave = repository.findById(leaveId)
+                .orElseThrow(() -> {
+                    logger.warn("Leave request not found with ID: {}", leaveId);
+                    return new RuntimeException("Leave request not found with ID: " + leaveId);
+                });
+
+        leave.setRemark(remark);
+        return repository.save(leave);
+    }
+    @Override
+    public String getRemarkByLeaveId(Long leaveId) {
+        LeaveRequest leave = repository.findById(leaveId)
+                .orElseThrow(() -> new RuntimeException("Leave request not found with ID: " + leaveId));
+        return leave.getRemark();
+    }
+
 
     @Override
     public void deleteLeaveRequest(Long id) {

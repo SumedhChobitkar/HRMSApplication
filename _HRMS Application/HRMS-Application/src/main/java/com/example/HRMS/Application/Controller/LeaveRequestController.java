@@ -130,23 +130,28 @@ public class LeaveRequestController {
         return null;
     }
 
-    @PutMapping("/updateStatus/{leaveId}")
-    public ResponseEntity<?> updateLeaveStatus(@PathVariable Long leaveId,
-                                               @RequestParam LeaveStatus status) {
-        logger.info("Updating status for leaveId: {} to {}", leaveId, status);
+//
+@PutMapping("/updateStatus/{leaveId}")
+public ResponseEntity<?> updateLeaveStatus(@PathVariable Long leaveId,
+                                           @RequestParam(required = false) LeaveStatus status) {
+    logger.info("Updating status for leaveId: {} to {}", leaveId, status);
 
-        try {
-            LeaveRequest updatedLeave = service.updateLeaveStatus(leaveId, status);
-            return ResponseEntity.ok(updatedLeave);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Validation failed while updating status: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            logger.error("Error updating leave status: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Server error while updating leave status.");
-        }
+    try {
+        LeaveRequest updatedLeave = service.updateLeaveStatus(leaveId, status);
+        return ResponseEntity.ok(updatedLeave);
+    } catch (IllegalArgumentException e) {
+        logger.warn("Validation failed while updating status for leaveId {}: {}", leaveId, e.getMessage());
+        return ResponseEntity.badRequest().body(e.getMessage());
+    } catch (RuntimeException e) {
+        logger.error("Leave request not found for leaveId {}: {}", leaveId, e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    } catch (Exception e) {
+        logger.error("Error updating leave status for leaveId {}: {}", leaveId, e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Server error while updating leave status.");
     }
+}
+
 
     @GetMapping("/leaveBalance/{employeeId}")
     public ResponseEntity<?> getLeaveBalance(@PathVariable Long employeeId) {
@@ -161,8 +166,6 @@ public class LeaveRequestController {
                     .body("Server error while fetching leave balance.");
         }
     }
-
-
 
 
   /*@PostMapping(value = "/createLeave", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
@@ -448,6 +451,37 @@ public class LeaveRequestController {
                 .header("Content-Disposition", "attachment; filename=\"" + leave.getFileName() + "\"")
                 .body(leave.getData());
     }
+    @GetMapping("/getRemark/{leaveId}")
+    public ResponseEntity<?> getRemarkByLeaveId(@PathVariable Long leaveId) {
+        logger.info("Fetching remark for leaveId: {}", leaveId);
+        try {
+            String remark = service.getRemarkByLeaveId(leaveId);
+            return ResponseEntity.ok(remark);
+        } catch (RuntimeException e) {
+            logger.warn("Leave request not found with ID: {}", leaveId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while fetching remark: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to fetch remark.");
+        }
+    }
+
+    @PostMapping("/addRemark/{leaveId}")
+    public ResponseEntity<?> addRemark(@PathVariable Long leaveId,
+                                       @RequestParam String remark) {
+        try {
+            LeaveRequest updatedLeave = service.addRemark(leaveId, remark);
+            return ResponseEntity.ok(updatedLeave);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while adding remark: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to add remark.");
+        }
+    }
+
 
 }
 
