@@ -3,4 +3,4 @@
 /workspace.xml
 *.class
 classes/
-*target/
+**/target/
