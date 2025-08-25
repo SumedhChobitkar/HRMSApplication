@@ -26,6 +26,7 @@ public class User {
 
     private String firstName;
     private String lastName;
+    private String gender;
 
     @Enumerated(EnumType.STRING)
     private Role role;
