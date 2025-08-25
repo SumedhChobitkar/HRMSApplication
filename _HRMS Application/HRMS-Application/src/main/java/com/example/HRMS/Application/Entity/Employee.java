@@ -25,6 +25,7 @@ public class Employee {
     private String phone;
     private String department;
     private String jobTitle;
+    private String gender;
 
     @Enumerated(EnumType.STRING)
     private Role role;  // EMPLOYEE, HR, SENIOR_HR, MANAGER

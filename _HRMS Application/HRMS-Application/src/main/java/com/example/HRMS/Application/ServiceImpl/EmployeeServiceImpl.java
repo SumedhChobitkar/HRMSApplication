@@ -55,17 +55,22 @@ public class EmployeeServiceImpl implements EmployeeService {
         existing.setJoiningDate(employee.getJoiningDate());
         existing.setExitDate(employee.getExitDate());
         existing.setStatus(employee.getStatus());
+        existing.setGender(employee.getGender());
 
         // Update profile picture
         existing.setProfilePicture(employee.getProfilePicture());
 
         if(existing.getUser()!= null) {
             existing.getUser().setRole(employee.getRole());
+            existing.getUser().setFirstName(employee.getFirstName());
+            existing.getUser().setLastName(employee.getLastName());
+            existing.getUser().setRole(employee.getRole());
+            existing.getUser().setEmail(employee.getEmail());
+            existing.getUser().setGender(employee.getGender());
         }
 
         return employeeRepository.save(existing);
     }
-
 
     @Override
     public void deleteEmployee(Long id) {
