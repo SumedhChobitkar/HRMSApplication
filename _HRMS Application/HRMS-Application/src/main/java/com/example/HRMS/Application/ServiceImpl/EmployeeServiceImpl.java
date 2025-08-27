@@ -34,43 +34,84 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepository.save(employee);
     }
 
-    @Override
-    public Employee updateEmployee(Long id, Employee employee) {
-        validateUserData(employee);
-        Employee existing = employeeRepository.findById(id)
-                .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with id: " + id));
-        logger.info("Updating employee ID: {}", id);
+//    @Override
+//    public Employee updateEmployee(Long id, Employee employee) {
+//        validateUserData(employee);
+//        Employee existing = employeeRepository.findById(id)
+//                .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with id: " + id));
+//        logger.info("Updating employee ID: {}", id);
+//
+//        Optional<Employee> employeeWithEmail = employeeRepository.findByEmail(employee.getEmail());
+//        if (employeeWithEmail.isPresent() && !employeeWithEmail.get().getId().equals(id)) {
+//            throw new IllegalArgumentException("Email already exists for another employee.");
+//        }
+//        existing.setFirstName(employee.getFirstName());
+//        existing.setLastName(employee.getLastName());
+//        existing.setEmail(employee.getEmail());
+//        existing.setPhone(employee.getPhone());
+//        existing.setDepartment(employee.getDepartment());
+//        existing.setJobTitle(employee.getJobTitle());
+//        existing.setRole(employee.getRole());
+//        existing.setJoiningDate(employee.getJoiningDate());
+//        existing.setExitDate(employee.getExitDate());
+//        existing.setStatus(employee.getStatus());
+//        existing.setGender(employee.getGender());
+//
+//        // Update profile picture
+//        existing.setProfilePicture(employee.getProfilePicture());
+//
+//        if(existing.getUser()!= null) {
+//            existing.getUser().setRole(employee.getRole());
+//            existing.getUser().setFirstName(employee.getFirstName());
+//            existing.getUser().setLastName(employee.getLastName());
+//            existing.getUser().setRole(employee.getRole());
+//            existing.getUser().setEmail(employee.getEmail());
+//            existing.getUser().setGender(employee.getGender());
+//        }
+//
+//        return employeeRepository.save(existing);
+//    }
+@Override
+public Employee updateEmployee(Long id, Employee employee) {
+    validateUserData(employee);
 
-        Optional<Employee> employeeWithEmail = employeeRepository.findByEmail(employee.getEmail());
-        if (employeeWithEmail.isPresent() && !employeeWithEmail.get().getId().equals(id)) {
-            throw new IllegalArgumentException("Email already exists for another employee.");
-        }
-        existing.setFirstName(employee.getFirstName());
-        existing.setLastName(employee.getLastName());
-        existing.setEmail(employee.getEmail());
-        existing.setPhone(employee.getPhone());
-        existing.setDepartment(employee.getDepartment());
-        existing.setJobTitle(employee.getJobTitle());
-        existing.setRole(employee.getRole());
-        existing.setJoiningDate(employee.getJoiningDate());
-        existing.setExitDate(employee.getExitDate());
-        existing.setStatus(employee.getStatus());
-        existing.setGender(employee.getGender());
+    Employee existing = employeeRepository.findById(id)
+            .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with id: " + id));
+    logger.info("Updating employee ID: {}", id);
 
-        // Update profile picture
-        existing.setProfilePicture(employee.getProfilePicture());
+    // Keep email static (do not update from request)
+    String currentEmail = existing.getEmail();
 
-        if(existing.getUser()!= null) {
-            existing.getUser().setRole(employee.getRole());
-            existing.getUser().setFirstName(employee.getFirstName());
-            existing.getUser().setLastName(employee.getLastName());
-            existing.getUser().setRole(employee.getRole());
-            existing.getUser().setEmail(employee.getEmail());
-            existing.getUser().setGender(employee.getGender());
-        }
+    existing.setFirstName(employee.getFirstName());
+    existing.setLastName(employee.getLastName());
+    existing.setPhone(employee.getPhone());
+    existing.setDepartment(employee.getDepartment());
+    existing.setJobTitle(employee.getJobTitle());
+    existing.setRole(employee.getRole());
+    existing.setJoiningDate(employee.getJoiningDate());
+    existing.setExitDate(employee.getExitDate());
+    existing.setStatus(employee.getStatus());
+    existing.setGender(employee.getGender());
 
-        return employeeRepository.save(existing);
+    // Update profile picture
+    existing.setProfilePicture(employee.getProfilePicture());
+
+    // Restore old email so it doesn’t change
+    existing.setEmail(currentEmail);
+
+    if (existing.getUser() != null) {
+        existing.getUser().setRole(employee.getRole());
+        existing.getUser().setFirstName(employee.getFirstName());
+        existing.getUser().setLastName(employee.getLastName());
+        existing.getUser().setGender(employee.getGender());
+
+        // Keep email static in User also
+        existing.getUser().setEmail(currentEmail);
     }
+
+    return employeeRepository.save(existing);
+}
+
 
     @Override
     public void deleteEmployee(Long id) {
