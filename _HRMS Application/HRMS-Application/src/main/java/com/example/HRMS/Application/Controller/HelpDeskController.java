@@ -12,6 +12,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -122,14 +123,23 @@ public class HelpDeskController {
         }
     }
 
-
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteHelpDesk(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
         try {
             helpDeskService.deleteHelpDeskById(id);
-            return ResponseEntity.ok("HelpDesk ticket deleted with ID: " + id);
+
+            response.put("status", "success");
+            response.put("message", "HelpDesk ticket deleted successfully");
+            response.put("id", id);
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(404).body("Error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            response.put("id", id);
+
+            return ResponseEntity.status(404).body(response);
         }
     }
 
