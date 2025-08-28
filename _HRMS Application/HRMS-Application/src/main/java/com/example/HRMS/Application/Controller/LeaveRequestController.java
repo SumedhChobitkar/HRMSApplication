@@ -37,6 +37,60 @@ public class LeaveRequestController {
     @Autowired
     private UserService userService;
 
+//    @PostMapping(value = "/createLeave", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+//    public ResponseEntity<?> createLeave(@RequestPart("request") LeaveRequest request,
+//                                         @RequestPart(value = "file", required = false) MultipartFile file) {
+//        logger.info("Creating new leave request for employeeId: {}", request.getEmployeeId());
+//
+//        if (request.getEmployeeId() == null) {
+//            return ResponseEntity.badRequest().body("Employee ID is required.");
+//        }
+//
+//        try {
+//            LocalDate fromDate = request.getFromDate();
+//            LocalDate toDate = request.getToDate();
+//            LocalDate today = LocalDate.now();
+//
+//            if (fromDate.isBefore(today.minusMonths(1))) {
+//                return ResponseEntity.badRequest().body("You can only apply for leave going back 1 month.");
+//            }
+//
+//            if (fromDate.isAfter(today.plusMonths(6))) {
+//                return ResponseEntity.badRequest().body("You can't apply for leave more than 6 months in advance.");
+//            }
+//
+//            if (toDate.isBefore(fromDate)) {
+//                return ResponseEntity.badRequest().body("To date must be the same or after From date.");
+//            }
+//
+//            // Prevent unpaid leave
+//            if (request.getLeaveType() == LeaveType.UNPAID) {
+//                return ResponseEntity.badRequest().body("Unpaid leave is not allowed.");
+//            }
+//
+//            // Fetch employee
+//            Employee employee = employeeRepository.findById(request.getEmployeeId())
+//                    .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + request.getEmployeeId()));
+//
+//            request.setEmployeeName(employee.getFirstName() + " " + employee.getLastName());
+//
+//            // Validate leave limits
+//            ResponseEntity<?> limitCheck = validateLeaveLimits(request, file);
+//            if (limitCheck != null) {
+//                return limitCheck; // return error message if limit exceeded
+//            }
+//
+//            LeaveRequest created = service.createLeaveRequest(request, file);
+//            return ResponseEntity.ok(created);
+//
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        } catch (Exception e) {
+//            logger.error("Error creating leave request: {}", e.getMessage(), e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("Server error while creating leave request.");
+//        }
+//    }
     @PostMapping(value = "/createLeave", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createLeave(@RequestPart("request") LeaveRequest request,
                                          @RequestPart(value = "file", required = false) MultipartFile file) {
@@ -63,11 +117,6 @@ public class LeaveRequestController {
                 return ResponseEntity.badRequest().body("To date must be the same or after From date.");
             }
 
-            // Prevent unpaid leave
-            if (request.getLeaveType() == LeaveType.UNPAID) {
-                return ResponseEntity.badRequest().body("Unpaid leave is not allowed.");
-            }
-
             // Fetch employee
             Employee employee = employeeRepository.findById(request.getEmployeeId())
                     .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + request.getEmployeeId()));
@@ -92,7 +141,49 @@ public class LeaveRequestController {
         }
     }
 
+//    private ResponseEntity<?> validateLeaveLimits(LeaveRequest request, MultipartFile file) {
+//        List<LeaveRequest> approvedLeaves = leaveRequestRepository
+//                .findByEmployeeIdAndStatus(request.getEmployeeId(), LeaveStatus.APPROVED);
+//
+//        long usedDays = 0;
+//        for (LeaveRequest lr : approvedLeaves) {
+//            if (lr.getLeaveType() == request.getLeaveType()) {
+//                usedDays += ChronoUnit.DAYS.between(lr.getFromDate(), lr.getToDate()) + 1;
+//            }
+//        }
+//
+//        long requestedDays = ChronoUnit.DAYS.between(request.getFromDate(), request.getToDate()) + 1;
+//        long allowedDays;
+//
+//        if (request.getLeaveType() == LeaveType.SICK) {
+//            allowedDays = 3;
+//        } else if (request.getLeaveType() == LeaveType.CASUAL) {
+//            allowedDays = 3;
+//        } else if (request.getLeaveType() == LeaveType.PAID) {
+//            allowedDays = 3;
+//        } else if (request.getLeaveType() == LeaveType.MATERNITY) {
+//            allowedDays = 180;
+//            if (file == null || file.isEmpty()) {
+//                return ResponseEntity.badRequest().body("Maternity leave requires a supporting document.");
+//            }
+//        } else {
+//            return ResponseEntity.badRequest().body("Invalid leave type.");
+//        }
+//
+//        long remainingDays = allowedDays - usedDays;
+//        if (requestedDays > remainingDays) {
+//            return ResponseEntity.badRequest().body("You have only " + remainingDays + " "
+//                    + request.getLeaveType() + " leave days remaining. You requested " + requestedDays + " days.");
+//        }
+//
+//        return null;
+//    }
     private ResponseEntity<?> validateLeaveLimits(LeaveRequest request, MultipartFile file) {
+        //validation for unpaid leave (unlimited days)
+        if (request.getLeaveType() == LeaveType.UNPAID) {
+            return null;
+        }
+
         List<LeaveRequest> approvedLeaves = leaveRequestRepository
                 .findByEmployeeIdAndStatus(request.getEmployeeId(), LeaveStatus.APPROVED);
 
@@ -130,7 +221,6 @@ public class LeaveRequestController {
         return null;
     }
 
-//
 @PutMapping("/updateStatus/{leaveId}")
 public ResponseEntity<?> updateLeaveStatus(@PathVariable Long leaveId,
                                            @RequestParam(required = false) LeaveStatus status) {
